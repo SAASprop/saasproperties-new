@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark theme only — consumed by tailwind.config.js colour tokens. */
+    --bg: 0 0% 4%;
+    --surface: 0 0% 8%;
+    --text: 0 0% 96%;
+    --muted: 0 0% 53%;
+    --stroke: 0 0% 12%;
+    --accent: 0 0% 96%;
+
+    /* The two fixed accent-gradient stops. Do not substitute other stops. */
+    --accent-from: #89aacc;
+    --accent-to: #4e85bf;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg font-body text-text antialiased;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  /* Users who ask for less motion get no smooth-scroll hijacking either. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* Keep anchor targets clear of the fixed navbar. */
+  section[id],
+  footer[id] {
+    scroll-margin-top: 6rem;
+  }
+
+  ::selection {
+    background: var(--accent-to);
+    color: hsl(var(--text));
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--bg));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--stroke));
+    border-radius: 999px;
+  }
+}
+
+@layer components {
+  .accent-gradient {
+    background: linear-gradient(90deg, var(--accent-from) 0%, var(--accent-to) 100%);
+  }
+
+  .accent-gradient-text {
+    background: linear-gradient(90deg, var(--accent-from) 0%, var(--accent-to) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Soft halo that fades in around pill buttons on hover. */
+  .gradient-border-ring {
+    position: relative;
+    isolation: isolate;
+  }
+  .gradient-border-ring::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(90deg, var(--accent-from) 0%, var(--accent-to) 100%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .gradient-border-ring:hover::before {
+    opacity: 1;
+  }
+
+  .eyebrow {
+    @apply text-[10px] uppercase tracking-[0.3em] text-muted;
+  }
+}
