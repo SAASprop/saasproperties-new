@@ -30,7 +30,11 @@ jobs:
 
       - run: npm run build
 
+      # enablement lets the first run turn Pages on itself and set the source to
+      # Actions, instead of failing until someone configures it by hand.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:
