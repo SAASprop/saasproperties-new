@@ -13,13 +13,13 @@ Vite · React 19 · TypeScript (strict) · Tailwind CSS · GSAP · Framer Motion
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/claude-preview/
+npm run dev      # http://localhost:5173/saasproperties-new/
 npm run build    # tsc -b && vite build  → dist/
 npm run preview  # serve the production build
 npm run lint     # oxlint
 ```
 
-The dev URL includes `/claude-preview/` because `base` in
+The dev URL includes `/saasproperties-new/` because `base` in
 [vite.config.ts](vite.config.ts) matches the GitHub Pages repo name.
 
 ## Deployment
@@ -30,7 +30,7 @@ builds and publishes `dist/` to GitHub Pages.
 
 One-time setup: **Settings → Pages → Source = GitHub Actions**.
 
-The repo must be named `claude-preview` — the Vite `base` is hardcoded to it. If
+The repo must be named `saasproperties-new` — the Vite `base` is hardcoded to it. If
 the repo is renamed, update `base` in `vite.config.ts` to match.
 
 ## Editing content
