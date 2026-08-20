@@ -1,0 +1,36 @@
+/* ===========================================================
+   Location — only what Tailwind has no utility for.
+   =========================================================== */
+
+/* Pre-animation hidden state, flipped by GSAP as each trigger fires. CSS rather
+   than a utility so the reduced-motion escape below can reach it — otherwise
+   anyone asking for less motion gets a blank section. */
+.loc-hide {
+  visibility: hidden;
+}
+
+/* ---- Dark map ----
+   A `maps/embed?pb=` iframe takes no style parameters and its document is
+   cross-origin, so the styled-map JSON that the Maps JavaScript API accepts is
+   not available here without an API key. Filtering the iframe from the outside
+   is the only treatment that reaches the tiles: invert flips the light basemap
+   to dark, and the hue rotation puts the blues back where they belong so the
+   Gulf still reads as water rather than orange.
+
+   Two honest side effects: Google's own marker and the attribution are
+   recoloured by the same filter — both stay fully legible, which is what the
+   embed terms require — and a filter on a large element is composited work, so
+   the iframe is only mounted once the section is near the viewport. */
+.loc-map-frame iframe {
+  filter: invert(0.92) hue-rotate(187deg) saturate(0.55) brightness(0.98)
+    contrast(1.04);
+  /* The embed ships a white page behind the tiles; without this it flashes
+     bright for a frame before the filter has anything to invert. */
+  background-color: hsl(var(--bg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loc-hide {
+    visibility: visible !important;
+  }
+}

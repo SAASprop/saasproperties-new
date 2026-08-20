@@ -1,0 +1,32 @@
+/* ===========================================================
+   Property stats — only the rules Tailwind cannot express.
+   Layout and type live on the component as utility classes.
+   =========================================================== */
+
+/* Pre-animation hidden state, flipped by GSAP as each trigger fires. CSS rather
+   than a utility so the reduced-motion escape below can reach it — otherwise
+   anyone asking for less motion gets a blank section, because nothing ever runs
+   to reveal it. */
+.ps-hide {
+  visibility: hidden;
+}
+
+/* SplitText writes these at runtime for the text values: type 'words' gives
+   .ps-word, and mask: 'words' wraps each in .ps-word-mask. The wrapper clips the
+   slide-up, so it must hide its overflow and stay in the text flow. */
+.ps-word {
+  display: inline-block;
+}
+
+.ps-word-mask {
+  display: inline-block;
+  overflow: hidden;
+  /* Serif descenders would otherwise be shaved off by the mask's own box. */
+  padding-bottom: 0.1em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-hide {
+    visibility: visible !important;
+  }
+}

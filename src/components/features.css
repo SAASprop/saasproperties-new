@@ -1,0 +1,24 @@
+/* ===========================================================
+   Features cards — only what Tailwind has no utility for.
+
+   The source drew a notched card edge as a ~100-point clip-path
+   polygon, hand-tuned in rem for one exact card size against a
+   fluid root font-size. It is dropped here: it cannot survive a
+   different card size, twelve of them is a lot of geometry to
+   rasterise, and a solid-colour notch reads as a hole punched in
+   a frosted panel rather than as a detail. The cards are a
+   hairline border over a blurred plate instead.
+   =========================================================== */
+
+/* Pre-animation hidden state, flipped by GSAP as each trigger fires. CSS rather
+   than a utility so the reduced-motion escape below can reach it — otherwise
+   anyone asking for less motion gets a blank section. */
+.ft-hide {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ft-hide {
+    visibility: visible !important;
+  }
+}

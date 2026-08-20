@@ -12,6 +12,12 @@
     --stroke: 0 0% 12%;
     --accent: 0 0% 96%;
 
+    /* Muted champagne, for markers and hairlines that need to read as warm
+       against the neutral greys. Kept as a token so it can be retuned in one
+       place; note the accent-gradient below is blue, so use one or the other
+       within a section rather than both. */
+    --champagne: 38 38% 70%;
+
     /* The two fixed accent-gradient stops. Do not substitute other stops. */
     --accent-from: #89aacc;
     --accent-to: #4e85bf;

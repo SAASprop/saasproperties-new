@@ -1,0 +1,32 @@
+/* ===========================================================
+   Overview section — only the rules Tailwind cannot express.
+   Everything else is utility classes on the component.
+   =========================================================== */
+
+/* Pre-animation hidden state. GSAP flips each element visible as its trigger
+   fires. This is CSS rather than a utility class because it needs the
+   reduced-motion escape below — without it, a visitor who asks for less motion
+   gets a blank section, since nothing ever runs to reveal it. */
+.ov-hide {
+  visibility: hidden;
+}
+
+/* SplitText generates these at runtime: type 'lines' writes .ov-line, and
+   mask: 'lines' wraps each in .ov-line-mask. The wrapper does the clipping, so
+   it has to be a block that hides its overflow. */
+.ov-line {
+  display: block;
+}
+
+.ov-line-mask {
+  display: block;
+  overflow: hidden;
+  /* Serif descenders would otherwise be shaved off by the mask's own box. */
+  padding-bottom: 0.12em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ov-hide {
+    visibility: visible !important;
+  }
+}

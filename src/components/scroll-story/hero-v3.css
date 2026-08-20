@@ -1,0 +1,270 @@
+/* ===========================================================
+   V3 hero — adapted from the ELYSE Webflow build.
+   Every rule is namespaced under .hero-v3. The original stylesheet
+   set `html { font-size: calc(16 * (100vw / 1920)) }`, which would
+   rescale every rem on the site — all Tailwind spacing included —
+   so the fluid scale is a local custom property instead.
+   =========================================================== */
+
+.hero-v3 {
+  /* One viewport unit of the original 1920-wide design, clamped so the
+     type stops growing past that width and never collapses below the
+     mobile floor. This replaces the global html font-size hack. */
+  --v3-unit: clamp(0.55rem, 100vw / 120, 1rem);
+
+  /* TODO(asset): the source design uses Fragment Serif / Fragment Glare
+     (Pangram Pangram, commercial) and Inter 28pt. Those files are not in
+     this repo, so the display roles fall back to the site's own tokens.
+     Drop the .woff2 files in /public/fonts, add @font-face rules, and
+     change only these two lines. */
+  --v3-font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --v3-font-body: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --v3-rule: rgb(255 255 255 / 0.2);
+  --v3-dim: rgb(255 255 255 / 0.7);
+
+  position: relative;
+  /* svh, not vh: mobile browser chrome otherwise pushes the bottom-anchored
+     content out of view on first paint. */
+  height: 100svh;
+  overflow: hidden;
+  background-color: #000;
+
+  /* Break out of the page shell's max-w-[1600px]. Without this the video stops
+     at 1600px and a wide monitor gets black bars either side. Valid because the
+     shell is centred; body sets overflow-x: hidden, which absorbs the scrollbar
+     gutter that 100vw includes. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* --- Background media layer --- */
+.hero-v3__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-v3__bg-inner {
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+.hero-v3__media {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Copy sits over unpredictable footage, so legibility cannot depend on the
+   media happening to be dark where the text lands. */
+.hero-v3__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Reaches to 90% so the meta rule and the display word are both covered — the
+     reel includes bright daylight aerials that white type disappears into. */
+  background:
+    linear-gradient(
+      to top,
+      rgb(0 0 0 / 0.9) 0%,
+      rgb(0 0 0 / 0.6) 35%,
+      rgb(0 0 0 / 0.25) 65%,
+      transparent 90%
+    ),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.55) 0%, transparent 30%);
+}
+
+/* --- Layout: content anchored to the bottom of the frame --- */
+.hero-v3__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* The section is now full-bleed, so the 1600px cap lives here — with the
+     gutters inside it, exactly as the navbar does it. Any other arrangement
+     puts the logo and the display type on different left edges. */
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1.25rem 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .hero-v3__inner {
+    padding: 0 3.75rem 3.75rem;
+  }
+}
+
+.hero-v3__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .hero-v3__heading {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 4rem;
+  }
+}
+
+/* --- The oversized display word --- */
+.hero-v3__title {
+  margin: 0;
+  font-family: var(--v3-font-display);
+  /* Upright, not the site-wide italic: the source design sets this word as a
+     roman uppercase serif. index.html loads the upright cut for it. */
+  font-style: normal;
+  /* The source pinned this at 27rem against a global fluid root. Sized off the
+     local unit instead so it tracks the viewport without touching the page. */
+  font-size: calc(var(--v3-unit) * 17);
+  font-weight: 400;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  .hero-v3__title {
+    font-size: calc(var(--v3-unit) * 9);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+}
+
+/* Each name line is its own block, so the two words stack. */
+.hero-v3__title-line {
+  display: block;
+}
+
+/* SplitText writes chars as .v3-char and, with mask: 'chars', wraps each in a
+   .v3-char-mask. The wrapper is what clips the slide-up, so it must hide its
+   overflow and sit in the text flow. */
+.hero-v3 .v3-char {
+  display: inline-block;
+  transform-style: preserve-3d;
+}
+
+.hero-v3 .v3-char-mask {
+  display: inline-block;
+  overflow: hidden;
+  /* The descender of a lowercase italic would otherwise be clipped by the
+     mask's own box. */
+  padding-bottom: 0.08em;
+}
+
+/* --- Right-hand column --- */
+.hero-v3__right {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-width: 24rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .hero-v3__right {
+    padding-bottom: 1.5rem;
+  }
+}
+
+.hero-v3__standfirst {
+  margin: 0;
+  font-family: var(--v3-font-display);
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.23;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+@media (min-width: 1024px) {
+  .hero-v3__standfirst {
+    font-size: 1.75rem;
+  }
+}
+
+.hero-v3__body {
+  margin: 1.5rem 0 0;
+  font-family: var(--v3-font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--v3-dim);
+}
+
+.hero-v3__scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--v3-font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--v3-dim);
+}
+
+.hero-v3__scroll::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 1px;
+  background: linear-gradient(to right, var(--v3-rule), transparent);
+}
+
+/* --- Meta row above the title --- */
+.hero-v3__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin: 0 0 1.75rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--v3-rule);
+  font-family: var(--v3-font-body);
+  font-size: 0.625rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--v3-dim);
+}
+
+/* Side by side, these two labels each wrap to two ragged lines on a phone.
+   Stacked with tighter tracking they stay on one line apiece. */
+@media (max-width: 640px) {
+  .hero-v3__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    letter-spacing: 0.2em;
+  }
+}
+
+/* Users who asked for less motion get the settled frame, never a transform. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-v3 .v3-char,
+  .hero-v3 .v3-word,
+  .hero-v3__body,
+  .hero-v3__scroll,
+  .hero-v3__meta {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .hero-v3__bg-inner {
+    transform: none !important;
+  }
+}

@@ -1,0 +1,34 @@
+/* ===========================================================
+   Contact — only what Tailwind has no utility for.
+   =========================================================== */
+
+/* Pre-animation hidden state, flipped by GSAP as each trigger fires. CSS rather
+   than a utility so the reduced-motion escape below can reach it — otherwise
+   anyone asking for less motion gets a blank section. */
+.ct-hide {
+  visibility: hidden;
+}
+
+/* Underline-only fields. The placeholder doubles as the label, so it has to stay
+   legible rather than sitting at the usual muted placeholder grey. */
+.ct-input::placeholder {
+  color: hsl(var(--muted));
+  opacity: 1;
+}
+
+/* The clear button appears only once a field has content. Done in CSS with
+   :placeholder-shown rather than from React state — it needs no re-render, and
+   it keeps working for an autofilled value that never fired a change event. */
+.ct-clear {
+  display: none;
+}
+
+.ct-input:not(:placeholder-shown) ~ .ct-clear {
+  display: flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ct-hide {
+    visibility: visible !important;
+  }
+}

@@ -1,0 +1,251 @@
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { PROPERTY } from "../lib/property";
+import { FeatureGlyph } from "./FeatureGlyph";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
+import "./location.css";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const { location } = PROPERTY;
+
+export function Location() {
+  const root = useRef<HTMLElement>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
+  /**
+   * The embed pulls a few hundred kilobytes of Google's own script and tiles, so
+   * it is not mounted until the section is close to the viewport. It sits well
+   * below the fold, which means it costs a first load nothing at all.
+   */
+  const [mapMounted, setMapMounted] = useState(false);
+
+  useEffect(() => {
+    const node = mapRef.current;
+    if (!node || mapMounted) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setMapMounted(true);
+      },
+      { rootMargin: "400px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [mapMounted]);
+
+  useLayoutEffect(() => {
+    if (reducedMotion) return;
+
+    const ctx = gsap.context(() => {}, root);
+    let cancelled = false;
+
+    // As elsewhere in the page: these triggers are `once: true`, and one built
+    // before the CSS lands or the webfont swaps measures against the wrong
+    // layout and fires immediately, which a later refresh cannot undo.
+    const layoutSettled = Promise.all([
+      document.fonts.ready,
+      new Promise<void>((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+      ),
+    ]);
+
+    void layoutSettled.then(() => {
+      if (cancelled) return;
+      ctx.add(() => {
+        // Header and copy.
+        gsap.utils
+          .toArray<HTMLElement>('[data-anim="element"]')
+          .forEach((el) => {
+            gsap.set(el, { visibility: "visible" });
+            gsap.from(el, {
+              opacity: 0,
+              y: 40,
+              duration: 1.2,
+              ease: "power3.out",
+              scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            });
+          });
+
+        // Dark panel wipes off the map plate, the same reveal the Overview and
+        // Features images use.
+        gsap.utils
+          .toArray<HTMLElement>('[data-anim="map-reveal"]')
+          .forEach((el) => {
+            gsap.set(el, { visibility: "visible", yPercent: 0 });
+            gsap.to(el, {
+              yPercent: -101,
+              duration: 1.5,
+              ease: "expo.inOut",
+              scrollTrigger: { trigger: el, start: "top 80%", once: true },
+            });
+          });
+
+        // Locator plate settles in after the map is uncovered.
+        gsap.utils.toArray<HTMLElement>('[data-anim="plate"]').forEach((el) => {
+          gsap.set(el, { visibility: "visible" });
+          gsap.from(el, {
+            opacity: 0,
+            x: -28,
+            duration: 1.1,
+            delay: 0.45,
+            ease: "power3.out",
+            scrollTrigger: { trigger: el, start: "top 85%", once: true },
+          });
+        });
+
+        // Highlights: hairline draws, then the figure rises behind it. Batched so
+        // a row further down the grid still animates as it is reached.
+        ScrollTrigger.batch('[data-anim="highlight"]', {
+          start: "top 92%",
+          once: true,
+          batchMax: 6,
+          onEnter: (batch) => {
+            gsap.set(batch, { visibility: "visible" });
+            const tl = gsap.timeline();
+            tl.from(
+              batch.map((el) => el.querySelector('[data-anim="rule"]')),
+              { scaleX: 0, duration: 1, ease: "expo.out", stagger: 0.07 },
+            ).from(
+              batch,
+              {
+                opacity: 0,
+                y: 34,
+                duration: 0.9,
+                ease: "power3.out",
+                stagger: 0.07,
+              },
+              0.06,
+            );
+          },
+        });
+
+        ScrollTrigger.refresh();
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      ctx.revert();
+    };
+  }, [reducedMotion]);
+
+  return (
+    <section
+      id="location"
+      ref={root}
+      className="overflow-hidden bg-bg py-24 lg:py-20"
+      aria-labelledby="location-heading"
+    >
+      <div className="mx-auto max-w-[1600px] px-5 md:px-[3.75rem]">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-14">
+          {/* Map, held on the left and bled to the container edge so the pair
+              reads as a composition rather than as two equal columns. */}
+          <div className="lg:col-span-5 lg:-ml-[3.75rem]">
+            <div
+              ref={mapRef}
+              className="loc-map-frame relative aspect-[4/5] overflow-hidden border border-champagne/25 bg-surface sm:aspect-[3/2] lg:h-full lg:min-h-[30rem] lg:aspect-auto"
+            >
+              {mapMounted && (
+                <iframe
+                  src={location.mapEmbedUrl}
+                  title={`Map of ${PROPERTY.name}, ${PROPERTY.place.name}`}
+                  className="absolute inset-0 h-full w-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              )}
+
+              {/* Vignette and inner hairline. Pointer-events off, so panning and
+                  zooming still reach the map. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/70 via-transparent to-bg/30"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5"
+              />
+
+              {/* Reveal panel, above the rest so it uncovers map and plate together. */}
+              <div
+                data-anim="map-reveal"
+                aria-hidden="true"
+                className="loc-hide pointer-events-none absolute inset-x-0 -top-[1%] h-[101%] bg-bg"
+              />
+            </div>
+          </div>
+
+          {/* Right column: heading, description, then the travel times. */}
+          <div className="lg:col-span-6 lg:col-start-7">
+            <p data-anim="element" className="loc-hide eyebrow">
+              {location.caption}
+            </p>
+            <p
+              data-anim="element"
+              className="loc-hide mt-4 text-[11px] uppercase tracking-[0.3em] text-champagne"
+            >
+              {location.kicker}
+            </p>
+            <h2
+              id="location-heading"
+              data-anim="element"
+              className="loc-hide mt-4 font-display text-4xl italic leading-[1.05] text-text sm:text-5xl"
+            >
+              {location.heading}
+            </h2>
+
+            <p
+              data-anim="element"
+              className="loc-hide mt-5 text-base leading-relaxed tracking-[0.02em] text-muted"
+            >
+              {location.body}
+            </p>
+
+            {/* Travel times. Two up, since this column is half the page — the
+                figure still carries the block. */}
+            <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:mt-12 lg:gap-x-8">
+              {location.highlights.map((highlight, index) => (
+                <div
+                  key={highlight.label}
+                  data-anim="highlight"
+                  className="loc-hide group flex flex-col"
+                >
+                  <span
+                    data-anim="rule"
+                    aria-hidden="true"
+                    className="block h-px w-full origin-left bg-stroke transition-colors duration-500 group-hover:bg-champagne/50"
+                  />
+
+                  <span className="mt-3 flex items-center justify-between gap-2">
+                    <span className="font-display text-[10px] not-italic tabular-nums text-muted">
+                      ( {String(index + 1).padStart(2, "0")} )
+                    </span>
+                    <FeatureGlyph
+                      icon={highlight.icon}
+                      className="h-5 w-5 shrink-0 text-champagne transition-transform duration-500 group-hover:-translate-y-0.5"
+                    />
+                  </span>
+
+                  <dd className="m-0 mt-3 flex items-baseline gap-1.5">
+                    <span className="font-display text-[clamp(1.75rem,2.3vw,2.375rem)] not-italic leading-none tracking-[-0.02em] text-text">
+                      {String(highlight.minutes).padStart(2, "0")}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-[0.25em] text-muted">
+                      min
+                    </span>
+                  </dd>
+
+                  <dt className="mt-2.5 text-[11px] uppercase leading-relaxed tracking-[0.14em] text-muted">
+                    {highlight.label}
+                  </dt>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

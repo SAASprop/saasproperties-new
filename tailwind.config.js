@@ -12,6 +12,7 @@ export default {
         muted: 'hsl(var(--muted) / <alpha-value>)',
         stroke: 'hsl(var(--stroke) / <alpha-value>)',
         accent: 'hsl(var(--accent) / <alpha-value>)',
+        champagne: 'hsl(var(--champagne) / <alpha-value>)',
       },
       fontFamily: {
         display: ['"Playfair Display"', 'Georgia', 'Times New Roman', 'serif'],
