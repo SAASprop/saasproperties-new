@@ -5,7 +5,7 @@
 /* Reveal state, shared with the Contact section's naming so the two read the
    same way. Kept in CSS for the reduced-motion escape below: without it, anyone
    asking for less motion is left looking at the cover panel. */
-.ct-hide {
+.fp-hide {
   visibility: hidden;
 }
 
@@ -27,7 +27,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ct-hide {
+  .fp-hide {
     visibility: visible !important;
   }
 }

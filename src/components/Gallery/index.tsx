@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { PROPERTY } from '../lib/property'
-import { MediaLightbox } from './MediaLightbox'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
-import './gallery.css'
+import { PROPERTY } from '../../lib/property'
+import { MediaLightbox } from '../MediaLightbox'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import './styles.css'
 
 const { gallery } = PROPERTY
 
@@ -155,7 +155,7 @@ export function Gallery() {
   const logicalIndex = activeIndex % count
 
   return (
-    <section id="gallery" className="bg-bg py-24 lg:py-32" aria-label="Gallery">
+    <section id="gallery" className="full-bleed bg-bg py-24 lg:py-28" aria-label="Gallery">
       <div className="mx-auto max-w-[1600px] px-5 md:px-[3.75rem]">
         {/* Header: caption and heading left, arrows right. */}
         <div className="mb-12 flex items-end justify-between gap-6 lg:mb-16">
@@ -191,7 +191,7 @@ export function Gallery() {
           still centres, and the cards bleed past both edges of the frame. */}
       <div
         ref={trackRef}
-        className="gallery-track flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain px-5 md:gap-6 md:px-[3.75rem]"
+        className="gallery-track flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain md:gap-6"
         tabIndex={0}
         role="group"
         aria-label={`${gallery.heading} — ${count} items`}

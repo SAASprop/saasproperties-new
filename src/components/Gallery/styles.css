@@ -1,0 +1,31 @@
+/* ===========================================================
+   Gallery carousel — only what Tailwind has no utility for.
+   =========================================================== */
+
+/* The track is scrolled by drag, buttons and keys; the native bar would sit
+   under the cards and spoil the frame. Hiding it is safe here because the
+   progress bar and the arrows both expose the scroll position. */
+.gallery-track {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  /* The track spans the viewport so the carousel is not confined to the middle
+     1600px of a wide monitor, but the first card must still line up with the
+     heading above it. This reproduces the page container's left edge: its
+     gutter, plus whatever margin the 1600px cap leaves once the viewport is
+     wider than that. Below 1600px the second term goes negative and the gutter
+     wins, which is exactly what the container does. */
+  --gallery-gutter: 1.25rem;
+  padding-left: var(--gallery-gutter);
+  padding-right: var(--gallery-gutter);
+}
+
+@media (min-width: 768px) {
+  .gallery-track {
+    --gallery-gutter: max(3.75rem, calc((100vw - 1600px) / 2 + 3.75rem));
+  }
+}
+
+.gallery-track::-webkit-scrollbar {
+  display: none;
+}

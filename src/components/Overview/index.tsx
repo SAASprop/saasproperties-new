@@ -2,9 +2,9 @@ import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
-import { PROPERTY } from '../lib/property'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
-import './overview.css'
+import { PROPERTY } from '../../lib/property'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
 

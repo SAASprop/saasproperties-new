@@ -91,7 +91,7 @@ export function ScrollStoryV3() {
       // No id: the Overview section below owns #overview, so the nav link lands
       // on the copy rather than on the hero the visitor is already looking at.
       ref={root}
-      className="hero-v3"
+      className="hero-v3 full-bleed"
       aria-label={`${PROPERTY.name} — hero`}
     >
       <div data-hero="bg" className="hero-v3__bg">

@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { PROPERTY } from '../lib/property'
-import { FeatureGlyph } from './FeatureGlyph'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
-import './features.css'
+import { PROPERTY } from '../../lib/property'
+import { FeatureGlyph } from '../FeatureGlyph'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -103,7 +103,7 @@ export function Features() {
     <section
       id="features"
       ref={root}
-      className="relative isolate overflow-hidden bg-bg py-24 lg:py-32"
+      className="full-bleed relative isolate overflow-hidden bg-bg py-24 lg:py-16"
       aria-label="Features"
     >
       {/* Full-bleed background. Sits behind everything via a negative z-index
@@ -158,12 +158,12 @@ export function Features() {
 
         {/* Cards. Two up on a phone, then three, then four — the count is
             whatever the data holds, so adding an amenity needs no layout work. */}
-        <ul className="mt-16 grid list-none grid-cols-2 gap-3 p-0 sm:gap-4 md:grid-cols-3 lg:mt-24 lg:grid-cols-4 lg:gap-5">
+        <ul className="mt-14 grid list-none grid-cols-2 gap-3 p-0 sm:gap-4 md:grid-cols-3 lg:mt-12 lg:grid-cols-4 lg:gap-4">
           {features.items.map((item, index) => (
             <li
               key={item.name}
               data-anim="stagger"
-              className="ft-hide group relative min-h-[10.5rem] overflow-hidden border border-stroke bg-white/[0.05] backdrop-blur-md transition-colors duration-500 hover:border-white/25 hover:bg-white/[0.09] sm:min-h-[12.5rem] lg:min-h-[14rem]"
+              className="ft-hide group relative min-h-[9.5rem] overflow-hidden border border-stroke bg-white/[0.05] backdrop-blur-md transition-colors duration-500 hover:border-white/25 hover:bg-white/[0.09] sm:min-h-[11rem] lg:min-h-[8.5rem]"
             >
               {/* Pinned rather than in the flow, so it cannot shift the centred
                   block off centre. */}
@@ -173,12 +173,12 @@ export function Features() {
 
               {/* Icon and name centred on both axes. The padding-top clears the
                   ordinal so a long name never runs under it. */}
-              <div className="flex h-full flex-col items-center justify-center gap-4 px-4 pb-6 pt-14 text-center sm:gap-5 sm:px-6">
+              <div className="flex h-full flex-col items-center justify-center gap-3 px-4 pb-5 pt-10 text-center sm:gap-4 sm:px-5">
                 <FeatureGlyph
                   icon={item.icon}
-                  className="h-8 w-8 shrink-0 text-text transition-transform duration-500 group-hover:-translate-y-0.5 sm:h-9 sm:w-9 lg:h-10 lg:w-10"
+                  className="h-7 w-7 shrink-0 text-text transition-transform duration-500 group-hover:-translate-y-0.5 sm:h-8 sm:w-8"
                 />
-                <h3 className="m-0 max-w-[14ch] font-display text-sm font-normal not-italic leading-snug text-text sm:text-base lg:text-lg">
+                <h3 className="m-0 max-w-[18ch] font-display text-sm font-normal not-italic leading-snug text-text sm:text-base">
                   {item.name}
                 </h3>
               </div>

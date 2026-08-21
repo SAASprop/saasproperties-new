@@ -109,4 +109,18 @@
   .eyebrow {
     @apply text-[10px] uppercase tracking-[0.3em] text-muted;
   }
+
+  /**
+   * Escapes the page shell's max-w-[1600px] so a section's media can reach the
+   * viewport edges. Without it a full-bleed background stops at 1600px and a
+   * wide monitor shows it cropped inside black margins.
+   *
+   * Valid because the shell is centred: 50% is the shell's midpoint and 50vw is
+   * the viewport's, so the difference is exactly the left margin. body sets
+   * overflow-x: hidden, which absorbs the scrollbar gutter that 100vw includes.
+   */
+  .full-bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+  }
 }

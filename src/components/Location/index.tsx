@@ -1,10 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { PROPERTY } from "../lib/property";
-import { FeatureGlyph } from "./FeatureGlyph";
-import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
-import "./location.css";
+import { PROPERTY } from "../../lib/property";
+import { FeatureGlyph } from "../FeatureGlyph";
+import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import './styles.css';
 
 gsap.registerPlugin(ScrollTrigger);
 

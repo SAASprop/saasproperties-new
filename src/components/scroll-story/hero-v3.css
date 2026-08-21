@@ -30,12 +30,6 @@
   overflow: hidden;
   background-color: #000;
 
-  /* Break out of the page shell's max-w-[1600px]. Without this the video stops
-     at 1600px and a wide monitor gets black bars either side. Valid because the
-     shell is centred; body sets overflow-x: hidden, which absorbs the scrollbar
-     gutter that 100vw includes. */
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
 }
 
 /* --- Background media layer --- */

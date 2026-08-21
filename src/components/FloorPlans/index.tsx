@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { PROPERTY } from '../lib/property'
-import { FloorPlanDrawing } from './FloorPlanDrawing'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
-import './floor-plans.css'
+import { PROPERTY } from '../../lib/property'
+import { MediaLightbox, type LightboxMedia } from '../MediaLightbox'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -14,6 +14,7 @@ export function FloorPlans() {
   const root = useRef<HTMLElement>(null)
   const reducedMotion = usePrefersReducedMotion()
   const [active, setActive] = useState(0)
+  const [viewerOpen, setViewerOpen] = useState(false)
 
   useLayoutEffect(() => {
     if (reducedMotion) return
@@ -69,6 +70,25 @@ export function FloorPlans() {
 
   const current = floorPlans.plans[active]
 
+  /**
+   * The sheets are dense enough to want a full-screen read, so they reuse the
+   * gallery's viewer. Every layout with a drawing goes in, which also lets the
+   * viewer step between layouts.
+   */
+  const viewerItems: LightboxMedia[] = floorPlans.plans
+    .filter((plan): plan is typeof plan & { image: string } => Boolean(plan.image))
+    .map((plan) => ({
+      kind: 'image',
+      src: plan.image,
+      title: `${plan.label} — ${plan.totalSqft} sq ft`,
+      alt: `${plan.label} floor plan, ${PROPERTY.name}`,
+    }))
+
+  /** Where `active` sits within the drawings that actually exist. */
+  const viewerIndex = floorPlans.plans
+    .slice(0, active)
+    .filter((plan) => plan.image).length
+
   return (
     <section
       id="floor-plan"
@@ -79,20 +99,20 @@ export function FloorPlans() {
       <div className="mx-auto max-w-[1600px] px-5 md:px-[3.75rem]">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Left: heading, layout picker, documents. */}
-          <div className="lg:col-span-4">
-            <p data-anim="element" className="ct-hide eyebrow">
+          <div className="lg:col-span-6">
+            <p data-anim="element" className="fp-hide eyebrow">
               {floorPlans.caption}
             </p>
             <h2
               id="floor-plan-heading"
               data-anim="element"
-              className="ct-hide mt-4 font-display text-4xl italic leading-[1.05] text-text sm:text-5xl"
+              className="fp-hide mt-4 font-display text-4xl italic leading-[1.05] text-text sm:text-5xl"
             >
               {floorPlans.heading}
             </h2>
             <p
               data-anim="element"
-              className="ct-hide mt-5 text-base leading-relaxed tracking-[0.02em] text-muted"
+              className="fp-hide mt-5 text-base leading-relaxed tracking-[0.02em] text-muted"
             >
               {floorPlans.intro}
             </p>
@@ -102,7 +122,7 @@ export function FloorPlans() {
                 promise a form control this is not. */}
             <ul
               data-anim="element"
-              className="ct-hide mt-10 list-none border-t border-stroke p-0"
+              className="fp-hide mt-10 list-none border-t border-stroke p-0"
             >
               {floorPlans.plans.map((plan, index) => {
                 const isActive = index === active
@@ -114,16 +134,23 @@ export function FloorPlans() {
                       aria-current={isActive ? 'true' : undefined}
                       className="group flex w-full items-center justify-between gap-4 py-4 text-left"
                     >
-                      <span className="flex items-center gap-4">
+                      <span className="flex items-baseline gap-4">
                         <span className="font-display text-[10px] not-italic tabular-nums text-muted">
                           {String(index + 1).padStart(2, '0')}
                         </span>
-                        <span
-                          className={`font-display text-lg not-italic transition-colors duration-300 sm:text-xl ${
-                            isActive ? 'text-text' : 'text-muted group-hover:text-text'
-                          }`}
-                        >
-                          {plan.label}
+                        <span>
+                          <span
+                            className={`block font-display text-lg not-italic transition-colors duration-300 sm:text-xl ${
+                              isActive ? 'text-text' : 'text-muted group-hover:text-text'
+                            }`}
+                          >
+                            {plan.label}
+                          </span>
+                          {/* Areas come off the drawing itself, so the list and
+                              the sheet always agree. */}
+                          <span className="mt-1 block text-[11px] uppercase tracking-[0.12em] text-muted">
+                            {plan.baths} bath · {plan.totalSqm} m² · {plan.totalSqft} sq ft
+                          </span>
                         </span>
                       </span>
                       <span
@@ -139,7 +166,7 @@ export function FloorPlans() {
             </ul>
 
             {/* Documents. */}
-            <div data-anim="element" className="ct-hide mt-10 flex flex-col gap-3 sm:flex-row lg:flex-col">
+            <div data-anim="element" className="fp-hide mt-10 flex flex-col gap-3 sm:flex-row lg:flex-col">
               {floorPlans.downloads.map((doc) =>
                 doc.url ? (
                   <a
@@ -178,47 +205,89 @@ export function FloorPlans() {
             </div>
           </div>
 
-          {/* Right: the drawing. */}
-          <div className="lg:col-span-8">
-            <div className="fp-frame relative aspect-[4/3] overflow-hidden border border-stroke bg-surface/40 sm:aspect-[16/10]">
-              {current.image ? (
+          {/* Right: the drawing. The sheets are 9:16 portrait, so the frame
+              takes that ratio and is capped in width — a landscape frame would
+              letterbox a tall sheet down to a strip. */}
+          <div className="lg:col-span-5 lg:col-start-8">
+            {current.image ? (
+              <button
+                type="button"
+                onClick={() => setViewerOpen(true)}
+                className="fp-frame group relative mx-auto block aspect-[9/16] w-full max-w-[19rem] overflow-hidden border border-stroke bg-surface/40 sm:max-w-[21rem]"
+                aria-label={`Enlarge the ${current.label} floor plan`}
+              >
                 <img
+                  key={current.image}
                   src={current.image}
                   alt={`${current.label} floor plan, ${PROPERTY.name}`}
-                  className="h-full w-full object-contain p-6 sm:p-10"
+                  className="fp-plan h-full w-full object-contain"
                   loading="lazy"
                   decoding="async"
                 />
-              ) : (
-                // No supplied drawing: show the indicative schematic. It is
-                // keyed so React swaps the element on change, which lets the
-                // fade below run per layout instead of once.
-                <div key={current.drawing} className="fp-plan absolute inset-0 p-5 sm:p-9">
-                  <FloorPlanDrawing
-                    drawing={current.drawing}
-                    className="h-full w-full text-text"
-                  />
+
+                {/* Enlarge affordance. A sheet this detailed is meant to be
+                    opened, and the viewer is already built. */}
+                <span className="pointer-events-none absolute bottom-0 inset-x-0 flex items-center justify-center gap-2 bg-gradient-to-t from-bg/90 to-transparent pb-4 pt-10 text-[10px] uppercase tracking-[0.25em] text-text opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  Enlarge
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="h-3.5 w-3.5"
+                    aria-hidden="true"
+                  >
+                    <path d="M9 4H4v5M15 20h5v-5M20 9V4h-5M4 15v5h5" />
+                  </svg>
+                </span>
+
+                {/* Reveal panel. */}
+                <span
+                  data-anim="plan-reveal"
+                  aria-hidden="true"
+                  className="fp-hide pointer-events-none absolute inset-x-0 -top-[1%] block h-[101%] bg-bg"
+                />
+              </button>
+            ) : (
+              // A layout with no sheet yet. Nothing is invented in its place.
+              <div className="fp-frame relative mx-auto grid aspect-[9/16] w-full max-w-[19rem] place-items-center border border-stroke bg-surface/40 px-6 text-center sm:max-w-[21rem]">
+                <div>
+                  <p className="font-display text-xl italic text-text">{current.label}</p>
+                  <p className="mt-3 text-sm leading-relaxed text-muted">
+                    Plan drawing to follow.
+                  </p>
+                  <a
+                    href={`#${PROPERTY.cta.targetId}`}
+                    className="mt-6 inline-block border border-champagne/40 px-5 py-3 text-[10px] uppercase tracking-[0.25em] text-text transition-colors duration-300 hover:bg-champagne hover:text-bg"
+                  >
+                    Request this layout
+                  </a>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Layout name, over the drawing rather than in it, so the SVG
-                  stays generic and reusable. */}
-              <span className="pointer-events-none absolute left-5 top-5 font-display text-sm italic text-muted sm:left-7 sm:top-7 sm:text-base">
-                {current.label}
-              </span>
-
-              {/* Reveal panel. */}
-              <div
-                data-anim="plan-reveal"
-                aria-hidden="true"
-                className="ct-hide pointer-events-none absolute inset-x-0 -top-[1%] h-[101%] bg-bg"
-              />
-            </div>
-
-            <p className="mt-4 text-[11px] leading-relaxed text-muted">
+            <p className="mx-auto mt-4 max-w-[21rem] text-[11px] leading-relaxed text-muted">
               {floorPlans.disclaimer}
             </p>
           </div>
+
+          {/* Mounts nothing until a sheet is opened. Stepping inside it also
+              moves the picker, so closing leaves the layout last looked at. */}
+          <MediaLightbox
+            items={viewerItems}
+            index={viewerOpen ? viewerIndex : null}
+            onClose={() => setViewerOpen(false)}
+            onNavigate={(next) => {
+              // Every viewer item is an image here, but the union also covers
+              // video, so narrow before reading src.
+              const item = viewerItems[next]
+              if (item?.kind !== 'image') return
+              const target = floorPlans.plans.findIndex((plan) => plan.image === item.src)
+              if (target >= 0) setActive(target)
+            }}
+          />
         </div>
       </div>
     </section>

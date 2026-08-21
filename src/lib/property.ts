@@ -127,18 +127,22 @@ export interface Features {
   items: { name: string; icon: FeatureIcon }[];
 }
 
-/** Which schematic to draw when no plan drawing has been supplied. */
-export type PlanDrawing = 'studio' | 'one-bed' | 'two-bed' | 'three-bed';
-
 export interface FloorPlans {
   caption: string;
   heading: string;
   intro: string;
   /**
-   * One entry per unit type. A supplied `image` always wins; with none, the
-   * viewer draws `drawing` as an indicative schematic.
+   * One entry per unit type. Areas are transcribed from the drawings, so the
+   * figures on the page and the figures on the sheet cannot drift apart.
    */
-  plans: { label: string; image: string | null; drawing: PlanDrawing }[];
+  plans: {
+    label: string;
+    baths: number;
+    /** Unit plus balcony, as printed on the sheet. */
+    totalSqm: number;
+    totalSqft: number;
+    image: string | null;
+  }[];
   /**
    * Documents. A null url renders the button as a request that points at the
    * contact form, so a visitor is never handed a download that 404s.
@@ -213,7 +217,9 @@ export interface Overview {
  * are encoded so a filename containing spaces still resolves.
  */
 const asset = (file: string) =>
-  `${import.meta.env.BASE_URL}${encodeURIComponent(file)}`;
+  // Encoded per segment: encodeURIComponent would escape the "/" too, turning
+  // floorplans/studio.jpg into floorplans%2Fstudio.jpg, which 404s.
+  `${import.meta.env.BASE_URL}${file.split("/").map(encodeURIComponent).join("/")}`;
 
 // TODO(asset): interim local file until the HLS ladder exists — a 29 MB, 23s
 // 1080p MP4 that loops.
@@ -339,15 +345,38 @@ export const PROPERTY: Property = {
     heading: 'Layouts',
     intro:
       'Every home is delivered furnished. Choose a layout to see its plan, or take the full set away with you.',
-    // TODO(asset): these are indicative schematics drawn in
-    // components/FloorPlanDrawing, NOT surveyed plans of this building. Drop the
-    // real drawings in /public and point `image` at them; a supplied image
-    // replaces the schematic without any component change.
+    // The client's own sheets, resized for the web from the 4500x8000 originals
+    // (6.3 MB -> 0.9 MB); the originals stay in /public/floorplans. Areas are
+    // transcribed from each sheet so the page and the drawing cannot disagree.
     plans: [
-      { label: 'Studio', image: null, drawing: 'studio' },
-      { label: '1 Bedroom', image: null, drawing: 'one-bed' },
-      { label: '2 Bedroom', image: null, drawing: 'two-bed' },
-      { label: '3 Bedroom', image: null, drawing: 'three-bed' },
+      {
+        label: 'Studio',
+        baths: 1,
+        totalSqm: 41.31,
+        totalSqft: 444.66,
+        image: asset('floorplans/studio-web.jpg'),
+      },
+      {
+        label: '1 Bedroom',
+        baths: 2,
+        totalSqm: 79.52,
+        totalSqft: 855.95,
+        image: asset('floorplans/1bed-web.jpg'),
+      },
+      {
+        label: '2 Bedroom',
+        baths: 3,
+        totalSqm: 109.05,
+        totalSqft: 1173.8,
+        image: asset('floorplans/2bed-web.jpg'),
+      },
+      {
+        label: '3 Bedroom',
+        baths: 4,
+        totalSqm: 202.57,
+        totalSqft: 2180.41,
+        image: asset('floorplans/3bed-web.jpg'),
+      },
     ],
     // TODO(asset): add the PDFs to /public and set the urls, e.g.
     // asset('reem-eleven-floor-plans.pdf'). While null, each button asks for the
@@ -361,7 +390,7 @@ export const PROPERTY: Property = {
       { label: 'Download brochure', requestLabel: 'Request brochure', url: null },
     ],
     disclaimer:
-      'Plans are indicative and not to scale. Areas and layouts are subject to final survey.',
+      'Plans are illustrative and may not be to scale. Areas and layouts are approximate and subject to change.',
   },
 
   contact: {

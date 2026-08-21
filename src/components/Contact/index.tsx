@@ -1,11 +1,11 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { PROPERTY } from '../lib/property'
-import { BRAND } from '../lib/content'
+import { PROPERTY } from '../../lib/property'
+import { BRAND } from '../../lib/content'
 import { SocialGlyph } from './SocialGlyph'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
-import './contact.css'
+import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -216,7 +216,7 @@ export function Contact() {
     <section
       id="contact"
       ref={root}
-      className="relative isolate overflow-hidden bg-bg py-24 lg:py-32"
+      className="full-bleed relative isolate overflow-hidden bg-bg py-24 lg:py-28"
       aria-labelledby="contact-heading"
     >
       {/* Full-bleed background, behind everything within the section's own
