@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PROPERTY } from '../../lib/property'
 import { MediaLightbox, type LightboxMedia } from '../MediaLightbox'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useMotionDisabled } from '../../lib/motion'
 import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -12,7 +12,7 @@ const { floorPlans } = PROPERTY
 
 export function FloorPlans() {
   const root = useRef<HTMLElement>(null)
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useMotionDisabled()
   const [active, setActive] = useState(0)
   const [viewerOpen, setViewerOpen] = useState(false)
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 import { BRAND, ENQUIRE, NAV_LINKS } from "../lib/content";
 import { SaasLogo } from "./SaasLogo";
 
@@ -7,8 +8,16 @@ export function Navbar() {
   const [activeId, setActiveId] = useState<string>(NAV_LINKS[0].id);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { search } = useLocation();
 
   // Highlight whichever section currently owns the middle of the viewport.
+  //
+  // Re-resolved whenever the query string changes, because the page's variants
+  // are selected from it: switching gallery design unmounts the old #gallery and
+  // mounts a different element under the same id. Elements are held by the
+  // observer, not looked up per callback, so without this it would go on
+  // watching a node that is no longer in the document and that entry would
+  // never light up again.
   useEffect(() => {
     const sections = NAV_LINKS.map(({ id }) =>
       document.getElementById(id),
@@ -27,7 +36,7 @@ export function Navbar() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 100);

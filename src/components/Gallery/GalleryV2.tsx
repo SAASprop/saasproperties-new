@@ -4,7 +4,7 @@ import { Draggable } from 'gsap/Draggable'
 import { InertiaPlugin } from 'gsap/InertiaPlugin'
 import { PROPERTY } from '../../lib/property'
 import { MediaLightbox, type OpenOrigin } from '../MediaLightbox'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useMotionDisabled } from '../../lib/motion'
 import type { GalleryVariantId } from '../../hooks/useGalleryVariant'
 import { CardFace } from './CardFace'
 import { VariantToggle } from './VariantToggle'
@@ -62,7 +62,7 @@ export function GalleryV2({
   const ringRef = useRef<HTMLUListElement>(null)
 
   const [viewer, setViewer] = useState<{ index: number; origin: OpenOrigin } | null>(null)
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useMotionDisabled()
 
   /**
    * Everything that stops the drift, as a mutable set of reasons. A ref rather

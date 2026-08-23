@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PROPERTY } from "../../lib/property";
 import { FeatureGlyph } from "../FeatureGlyph";
-import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import { useMotionDisabled } from "../../lib/motion";
 import './styles.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -13,7 +13,7 @@ const { location } = PROPERTY;
 export function Location() {
   const root = useRef<HTMLElement>(null);
   const mapRef = useRef<HTMLDivElement>(null);
-  const reducedMotion = usePrefersReducedMotion();
+  const reducedMotion = useMotionDisabled();
   /**
    * The embed pulls a few hundred kilobytes of Google's own script and tiles, so
    * it is not mounted until the section is close to the viewport. It sits well
@@ -81,18 +81,10 @@ export function Location() {
             });
           });
 
-        // Locator plate settles in after the map is uncovered.
-        gsap.utils.toArray<HTMLElement>('[data-anim="plate"]').forEach((el) => {
-          gsap.set(el, { visibility: "visible" });
-          gsap.from(el, {
-            opacity: 0,
-            x: -28,
-            duration: 1.1,
-            delay: 0.45,
-            ease: "power3.out",
-            scrollTrigger: { trigger: el, start: "top 85%", once: true },
-          });
-        });
+        // The floating locator plate this used to animate was removed from the
+        // markup; nothing has carried data-anim="plate" since. Dropped rather
+        // than left in place — a selector that matches nothing reads as an
+        // animation that is quietly failing.
 
         // Highlights: hairline draws, then the figure rises behind it. Batched so
         // a row further down the grid still animates as it is reached.

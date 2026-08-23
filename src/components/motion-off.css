@@ -1,0 +1,144 @@
+/* ===========================================================
+   The OFF state
+   ===========================================================
+
+   Every animated section hides its own elements before revealing
+   them — `.ov-hide`, `.ps-hide`, `.ft-hide` and so on are all
+   `visibility: hidden` — and each already carries a
+   `prefers-reduced-motion` escape that turns that off.
+
+   With the switch off, the JavaScript that would have revealed
+   those elements never runs, so they need the same escape for a
+   different reason. This file is that escape, gathered in one
+   place: it is the single answer to "what does OFF actually do?",
+   and the one file to extend when a section is added.
+
+   It deliberately mirrors, rule for rule, the reduced-motion
+   blocks living in each section's own stylesheet. If one of those
+   changes, change its twin here.
+
+   Nothing below animates anything. Every rule reveals a resting
+   state, so the page with motion off is the page with no motion
+   system at all — which is the point: it has to be shippable, not
+   a degraded preview.  */
+
+/* --- Hidden pre-states ------------------------------------- */
+
+/* The reveal-on-scroll sections. Each of these classes is applied
+   by its section to whatever starts hidden. */
+[data-motion='off'] .ov-hide,
+[data-motion='off'] .ps-hide,
+[data-motion='off'] .ft-hide,
+[data-motion='off'] .fp-hide,
+[data-motion='off'] .loc-hide,
+[data-motion='off'] .ct-hide {
+  visibility: visible !important;
+}
+
+/* --- Wipe panels ------------------------------------------- */
+
+/* The exception to the rule above, and it matters.
+   Those `-hide` classes sit on two different kinds of thing: the
+   content that should end up visible, and the ground-coloured
+   panels that slide up off the images to uncover them. Revealing a
+   panel is the opposite of what it wants — it is only ever seen on
+   its way out, so making it visible and never animating it leaves
+   it parked over the image it was covering.
+   The panels are identifiable by what they do, so they are turned
+   off by their `data-anim` role rather than by their class.
+   Without this, Overview, Features, Contact, Location and
+   FloorPlans all render a flat rectangle of background where their
+   photograph, map or drawing should be. */
+[data-motion='off'] [data-anim='img-overlay'],
+[data-motion='off'] [data-anim='map-reveal'],
+[data-motion='off'] [data-anim='plan-reveal'] {
+  display: none;
+}
+
+/* The same fault existed on the reduced-motion path long before
+   the switch did, for the same reason: every section's
+   `@media (prefers-reduced-motion: reduce)` block reveals its
+   `-hide` elements, panels included. So anyone who had asked their
+   system for less motion was silently losing five images. Fixed
+   here rather than five times over, since this file is already the
+   place that answers what a page with no motion looks like. */
+@media (prefers-reduced-motion: reduce) {
+  [data-anim='img-overlay'],
+  [data-anim='map-reveal'],
+  [data-anim='plan-reveal'] {
+    display: none;
+  }
+}
+
+/* --- Hero ------------------------------------------------- */
+
+/* SplitText never runs with motion off, so .v3-char and .v3-word
+   will not exist — these are here for the case where the switch is
+   flipped off after the intro has already built them, when the
+   context revert leaves the elements in place. */
+[data-motion='off'] .v3-char,
+[data-motion='off'] .v3-word,
+[data-motion='off'] .hero-v3__body,
+[data-motion='off'] .hero-v3__scroll,
+[data-motion='off'] .hero-v3__meta {
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+[data-motion='off'] .hero-v3__bg-inner {
+  transform: none !important;
+}
+
+/* --- Floor plans ------------------------------------------- */
+
+/* The plan swap is a CSS keyframe rather than a timeline, so it has
+   to be stopped here rather than by gating an effect. */
+[data-motion='off'] .fp-plan {
+  animation: none;
+}
+
+/* --- Galleries -------------------------------------------- */
+
+/* V1's wall turns on a CSS animation, and its slots are faded by a
+   second one phase-locked to it. Stopping the rotation alone would
+   leave the near half of the cylinder sitting at full opacity in
+   front of the far half, so the same slots the reduced-motion block
+   drops have to be dropped here too — otherwise OFF looks broken
+   rather than still. What is left is the symmetric seven-card fan
+   at 0, ±20, ±40 and ±60. */
+[data-motion='off'] .g-ring,
+[data-motion='off'] .g-slot {
+  animation: none;
+}
+
+[data-motion='off'] .g-slot:nth-child(n + 5):nth-child(-n + 15) {
+  display: none;
+}
+
+[data-motion='off'] .g-card,
+[data-motion='off'] .g-card img,
+[data-motion='off'] .g-veil,
+[data-motion='off'] .g-cue,
+[data-motion='off'] .v2-card,
+[data-motion='off'] .v2-card img {
+  transition: none;
+}
+
+/* The cue still appears on hover — it is what tells you the card
+   opens something — it just arrives without the slide. */
+[data-motion='off'] .g-cue {
+  transform: none;
+}
+
+/* V2's ring is turned by hand, and its drift is gated on the same
+   hook the sections use, so it stops on its own. Only the promotion
+   hint needs dropping. */
+[data-motion='off'] .v2-ring {
+  will-change: auto;
+}
+
+/* --- Image fades ------------------------------------------ */
+
+/* Nothing needed. The fades that blend the image-backed sections
+   into the page are static gradients, not animations, so they are
+   already correct in both states. */

@@ -72,6 +72,40 @@
     linear-gradient(to bottom, rgb(0 0 0 / 0.55) 0%, transparent 30%);
 }
 
+/* The seam where the reel meets the first black section is the most looked-at
+   transition on the page, and the scrim above stops at 0.9 — it is sized for
+   legibility, not for closing an edge, so a tenth of the footage was still
+   showing at the very bottom. On the bright daylight aerials in this cut that
+   read as a pale strip butting up against the section below.
+   Its own layer rather than another stop on the scrim, because the two want
+   different colours: the scrim is pure black over footage, while this has to
+   land on exactly the ground the next section is painted in. Only the last
+   few percent, so it takes nothing off the frame itself. */
+.hero-v3__seal {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--bg) / 0) 88%,
+    hsl(var(--bg) / 0.72) 97%,
+    hsl(var(--bg)) 100%
+  );
+}
+
+@media (max-width: 640px) {
+  /* Shorter frame, so the same share of it is far fewer pixels. */
+  .hero-v3__seal {
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--bg) / 0) 84%,
+      hsl(var(--bg) / 0.72) 96%,
+      hsl(var(--bg)) 100%
+    );
+  }
+}
+
 /* --- Layout: content anchored to the bottom of the frame --- */
 .hero-v3__inner {
   position: relative;

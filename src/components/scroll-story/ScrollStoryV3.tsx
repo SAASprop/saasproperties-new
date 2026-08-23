@@ -5,7 +5,7 @@ import { SplitText } from 'gsap/SplitText'
 import { PROPERTY } from '../../lib/property'
 import { PropertyMedia } from '../PropertyMedia'
 import { useRevealed } from '../../lib/reveal'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useMotionDisabled } from '../../lib/motion'
 import './hero-v3.css'
 
 // Both plugins ship free in gsap 3.13+, so no Club install step is involved.
@@ -14,7 +14,7 @@ gsap.registerPlugin(ScrollTrigger, SplitText)
 export function ScrollStoryV3() {
   const root = useRef<HTMLElement>(null)
   const revealed = useRevealed()
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useMotionDisabled()
 
   useLayoutEffect(() => {
     // Reduced motion gets the settled frame; the stylesheet pins the final state
@@ -104,6 +104,9 @@ export function ScrollStoryV3() {
         </div>
       </div>
       <div className="hero-v3__scrim" />
+      {/* Closes the bottom edge onto the ground the next section is painted in.
+          Sits above the scrim and below the copy. */}
+      <div className="hero-v3__seal" aria-hidden="true" />
 
       <div className="hero-v3__inner">
         <div data-hero="meta" className="hero-v3__meta">

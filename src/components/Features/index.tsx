@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PROPERTY } from '../../lib/property'
 import { FeatureGlyph } from '../FeatureGlyph'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useMotionDisabled } from '../../lib/motion'
 import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -12,7 +12,7 @@ const { features } = PROPERTY
 
 export function Features() {
   const root = useRef<HTMLElement>(null)
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useMotionDisabled()
 
   useLayoutEffect(() => {
     if (reducedMotion) return
@@ -120,8 +120,17 @@ export function Features() {
         </div>
         {/* Darkens the plate so white copy holds over any part of the photo. The
             cards blur what shows through here, so this is also what stops the
-            frosted panels turning milky over the bright sky. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/90 via-bg/55 to-bg/90" />
+            frosted panels turning milky over the bright sky.
+
+            This used to run from bg/90 through bg/55 and back, which held the
+            copy but left a tenth of the photograph showing at the very top and
+            bottom edges — a bright strip meeting the black section either side.
+            The scrim across the middle is unchanged at 0.55; only the two ends
+            now resolve the whole way to the page's ground. */}
+        <div
+          className="img-fade-y"
+          style={{ '--fade-scrim': 0.55, '--fade-edge': 0.93 } as React.CSSProperties}
+        />
         <div
           data-anim="img-overlay"
           className="ft-hide absolute inset-x-0 -top-[1%] h-[101%] bg-bg"

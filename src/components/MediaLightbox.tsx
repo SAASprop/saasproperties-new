@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Media } from '../lib/property'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
+import { useMotionDisabled } from '../lib/motion'
 
 export type LightboxMedia = Media & { title: string }
 
@@ -79,7 +79,7 @@ export function MediaLightbox({
   const restoreFocusTo = useRef<HTMLElement | null>(null)
   /** Which way the last navigation went, so the transition slides to match. */
   const [direction, setDirection] = useState(1)
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useMotionDisabled()
 
   /** The frame the media grows inside. Driven directly, not by framer-motion. */
   const frameRef = useRef<HTMLDivElement>(null)

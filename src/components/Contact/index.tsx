@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PROPERTY } from '../../lib/property'
 import { BRAND } from '../../lib/content'
 import { SocialGlyph } from './SocialGlyph'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useMotionDisabled } from '../../lib/motion'
 import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -96,7 +96,7 @@ function mailtoFor(values: Values, dial: string) {
 
 export function Contact() {
   const root = useRef<HTMLElement>(null)
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useMotionDisabled()
   const [values, setValues] = useState<Values>(EMPTY)
   const [dial, setDial] = useState<string>(DIAL_CODES[0].dial)
   const [status, setStatus] = useState<Status>('idle')
@@ -231,7 +231,23 @@ export function Contact() {
             decoding="async"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/95 via-bg/80 to-bg/95" />
+        {/* Same treatment as Features: the 0.80 scrim the form needs to read
+            against is kept, and only the ends are taken the rest of the way to
+            the page's ground so the photograph does not stop against an edge.
+            The scrim here is heavier than Features' because a form has to be
+            legible, not just a heading, so the clear span is pulled in to give
+            the fades something to travel across. */}
+        <div
+          className="img-fade-y"
+          style={
+            {
+              '--fade-scrim': 0.8,
+              '--fade-edge': 0.97,
+              '--fade-clear-start': '20%',
+              '--fade-clear-end': '80%',
+            } as React.CSSProperties
+          }
+        />
         <div
           data-anim="img-overlay"
           aria-hidden="true"

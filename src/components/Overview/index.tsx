@@ -3,7 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { SplitText } from 'gsap/SplitText'
 import { PROPERTY } from '../../lib/property'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useMotionDisabled } from '../../lib/motion'
 import './styles.css'
 
 gsap.registerPlugin(ScrollTrigger, SplitText)
@@ -13,7 +13,7 @@ const { overview } = PROPERTY
 
 export function Overview() {
   const root = useRef<HTMLElement>(null)
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useMotionDisabled()
 
   useLayoutEffect(() => {
     // The stylesheet leaves everything visible under reduced motion, so there is
@@ -150,6 +150,12 @@ export function Overview() {
               data-anim="img-parallax"
               className="h-full w-full object-cover will-change-transform"
             />
+            {/* No fade here on purpose. This is a framed editorial portrait in
+                a grid column, not a plate behind the page — its rectangle is
+                the composition, and its side edges line up with the columns
+                either side of it. Softening only its top and bottom would have
+                left it neither one thing nor the other. The fades belong to the
+                sections whose image *is* the background. */}
             <div
               data-anim="img-overlay"
               // Sits 1% outside the frame so no hairline of image shows above it

@@ -123,4 +123,63 @@
     width: 100vw;
     margin-left: calc(50% - 50vw);
   }
+
+  /**
+   * Sinks the top and bottom of an image into the page, so it reads as
+   * emerging out of the dark rather than as a rectangle laid on top of it.
+   *
+   * Applied as its own absolutely-positioned layer over the image, never as a
+   * filter or an opacity on the image itself: lowering the image's own opacity
+   * washes out the whole photograph evenly, which is the opposite of the point.
+   *
+   * It resolves to `hsl(var(--bg))` — the page's own ground, #0a0a0a — and not
+   * to #000. Pure black would leave the fade *darker* than the sections either
+   * side of it, trading the hard edge at the image boundary for a soft dark
+   * band just inside it. Matching the surrounding colour exactly is what makes
+   * the seam disappear; "black" here means the page's black.
+   *
+   * Six stops, and the two in the middle are what make it tunable: sections
+   * with type over the image hold a scrim across the clear span, sections
+   * without one let the photograph through untouched. Override the variables
+   * per section rather than writing another gradient.
+   */
+  .img-fade-y {
+    /* Opacity across the clear middle. 0 leaves the image alone; a section
+       with text over it wants enough to read against. */
+    --fade-scrim: 0;
+    /* Opacity just inside each edge. Not 1 — the fade has to have somewhere
+       left to travel, or the edge is merely moved rather than removed. */
+    --fade-edge: 0.92;
+    /* Where each fade releases into the clear span, and where it starts to
+       gather again. */
+    --fade-top: 7%;
+    --fade-clear-start: 24%;
+    --fade-clear-end: 76%;
+    --fade-bottom: 93%;
+
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--bg)) 0%,
+      hsl(var(--bg) / var(--fade-edge)) var(--fade-top),
+      hsl(var(--bg) / var(--fade-scrim)) var(--fade-clear-start),
+      hsl(var(--bg) / var(--fade-scrim)) var(--fade-clear-end),
+      hsl(var(--bg) / var(--fade-edge)) var(--fade-bottom),
+      hsl(var(--bg)) 100%
+    );
+  }
+
+  /* A percentage fade covers the same share of a short section as a tall one,
+     but far fewer actual pixels, so the same ramp reads as harder on a phone.
+     The clear span is pulled in to give it more room to travel. */
+  @media (max-width: 640px) {
+    .img-fade-y {
+      --fade-top: 10%;
+      --fade-clear-start: 31%;
+      --fade-clear-end: 69%;
+      --fade-bottom: 90%;
+    }
+  }
 }
