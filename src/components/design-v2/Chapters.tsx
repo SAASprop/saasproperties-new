@@ -83,10 +83,14 @@ export function Chapters() {
       </div>
 
       {/* The rail sits outside the frame's grid so it can bleed to the edge and
-          keep the next chapter visibly waiting. Native scroll-snap, no pinning:
-          nothing is hijacked, touch behaves, and it costs no JavaScript. */}
-      <div className="dv2-frame" style={{ display: 'block' }}>
-        <div className="dv2-chapters">
+          keep the next chapter visibly waiting.
+
+          It is driven by vertical page scroll rather than by its own horizontal
+          scrollbar — see the pinned block in useReveal for why the scrollbar
+          version did not work with a mouse. Below 1000px this container is an
+          ordinary block and the rail is a vertical stack. */}
+      <div className="dv2-pin" data-dv2-pin>
+        <div className="dv2-chapters" data-dv2-rail>
           {CHAPTERS.map((chapter, index) => (
             <article className="dv2-chapter" key={chapter.id}>
               <div className="dv2-chapter-figure dv2-hide" data-dv2="image">

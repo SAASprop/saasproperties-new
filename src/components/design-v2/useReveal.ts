@@ -109,6 +109,49 @@ export function useReveal(root: RefObject<HTMLElement | null>) {
           })
         })
 
+        /* --- The horizontal chapter rail ---------------------------------
+         *
+         * This was a native `overflow-x: auto` box with its scrollbar hidden,
+         * and that is why it did not work: a vertical mouse wheel over a
+         * horizontally-scrolling element does nothing, and with no scrollbar
+         * there was nothing to drag either. It moved only for a trackpad's
+         * sideways swipe or a touch drag — so on a desktop with a mouse, the
+         * section looked broken.
+         *
+         * Pinning it fixes the cause rather than papering over it: the section
+         * holds still and the rail is driven by ordinary vertical page scroll,
+         * so the wheel, the trackpad, a touch swipe and the keyboard all move
+         * it, because all of them already scroll the page.
+         *
+         * Travel is measured from the rail's own overflow, and the pin lasts
+         * exactly that far, so vertical and horizontal speeds match and the
+         * scroll never feels geared. Desktop only — below 1000px the rail is
+         * a vertical stack that needs none of this.
+         */
+        ScrollTrigger.matchMedia({
+          '(min-width: 1000px)': () => {
+            const pin = el.querySelector<HTMLElement>('[data-dv2-pin]')
+            const rail = el.querySelector<HTMLElement>('[data-dv2-rail]')
+            if (!pin || !rail) return
+
+            const travel = () => Math.max(rail.scrollWidth - pin.clientWidth, 0)
+
+            gsap.to(rail, {
+              x: () => -travel(),
+              ease: 'none',
+              scrollTrigger: {
+                trigger: pin,
+                start: 'top top',
+                end: () => `+=${travel()}`,
+                pin: true,
+                scrub: 0.4,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+              },
+            })
+          },
+        })
+
         // Scrubbed, so it runs both ways with the scroll rather than firing once.
         gsap.utils.toArray<HTMLElement>('[data-dv2="drift"]').forEach((node) => {
           gsap.to(node, {

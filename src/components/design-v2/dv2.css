@@ -451,10 +451,17 @@
   padding-top: 1.5rem;
 }
 
+/* Substantially smaller than it was (it ran to 15vw — 216px at
+   1440px, which made it the only thing in the frame). At 6.4vw it
+   is still the largest type on the page and still the anchor of the
+   composition, but the photography is now what the eye lands on
+   first.
+   The tracking is softened to match: -0.045em is a correction for
+   type at 200px, and at 90px it reads as cramped rather than tight. */
 .dv2-hero-name {
-  font-size: clamp(3rem, 15vw, 15rem);
-  line-height: 0.82;
-  letter-spacing: -0.045em;
+  font-size: clamp(2rem, 6.4vw, 7rem);
+  line-height: 0.94;
+  letter-spacing: -0.018em;
 }
 
 /* The second line steps in. The indent is the composition — it is
@@ -465,7 +472,10 @@
 
 @media (min-width: 900px) {
   .dv2-hero-name > span:last-child {
-    padding-left: 1.2em;
+    /* Reduced with the type size: an indent of 1.2em was a step of
+       260px at the old scale and reads as a different block
+       entirely at this one. */
+    padding-left: 0.7em;
   }
 }
 
@@ -566,39 +576,61 @@
 
 /* --- Chapters (amenities) --------------------------------- */
 
-/* The horizontal editorial moment. A scroll-snap rail on wide
-   screens — native scrolling, no pinning and no scroll hijack, so
-   it costs nothing and behaves correctly under touch. Below that it
-   becomes an ordinary vertical stack rather than a cramped rail. */
+/* The horizontal editorial moment.
+   Above 1000px the section pins and the rail is moved by vertical
+   page scroll. It used to be an `overflow-x: auto` box with the
+   scrollbar hidden, which is why it appeared not to scroll at all
+   with a mouse: a vertical wheel does nothing to a horizontal
+   scroller, and there was no bar left to drag. Driving it from page
+   scroll means every input that already scrolls the page moves it.
+   Below 1000px it is a plain vertical stack. */
+/* The rail is a direct child of the section rather than of a
+   .dv2-frame, so that the pinned version can bleed to the edge. As a
+   vertical stack it therefore has to carry the frame's own measure
+   itself, or it would run edge to edge and stop lining up with every
+   other section. */
 .dv2-chapters {
   margin-top: clamp(3rem, 6vw, 5rem);
   display: flex;
   flex-direction: column;
   gap: clamp(3.5rem, 7vw, 6rem);
+  max-width: 1680px;
+  margin-inline: auto;
+  padding-inline: var(--dv2-gutter);
 }
 
+/* The pinned frame. Only a container above 1000px; below that it has
+   no effect at all, so the stack flows normally. */
 @media (min-width: 1000px) {
-  .dv2-chapters {
-    flex-direction: row;
-    gap: 2.5rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-left: var(--dv2-gutter);
-    /* The rail bleeds past the frame so the next chapter is always
-       visibly waiting at the edge. */
-    margin-inline: calc(var(--dv2-gutter) * -1);
-    padding-inline: var(--dv2-gutter);
-    padding-bottom: 1.5rem;
-    scrollbar-width: none;
+  .dv2-pin {
+    position: relative;
+    height: 100svh;
+    display: flex;
+    align-items: center;
+    /* Hides the rail's overflow while it travels. */
+    overflow: hidden;
   }
 
-  .dv2-chapters::-webkit-scrollbar {
-    display: none;
+  .dv2-chapters {
+    margin-top: 0;
+    margin-inline: 0;
+    max-width: none;
+    flex-direction: row;
+    gap: 3rem;
+    /* max-content is what gives the rail something to overflow, and
+       what makes scrollWidth the real measurement the pin reads. */
+    width: max-content;
+    padding-inline: var(--dv2-gutter);
+    will-change: transform;
   }
 }
 
-.dv2-chapter {
-  scroll-snap-align: start;
+/* From here the fixed index rail is on screen, so the last chapter
+   has to come to rest clear of it. */
+@media (min-width: 1100px) {
+  .dv2-chapters {
+    padding-right: calc(var(--dv2-gutter) + 4.5rem);
+  }
 }
 
 @media (min-width: 1000px) {
@@ -809,105 +841,391 @@
   color: rgb(242 238 231 / 0.66);
 }
 
-/* --- Plans ------------------------------------------------ */
+/* --- Plans: carousel ------------------------------------- */
 
-.dv2-plans {
+/* The sheets are 1400x2489 — 1:1.78, taller than a phone screen.
+   Shown at natural ratio the section became a column of drawings
+   each taller than the window, so reaching the second layout meant
+   scrolling past the whole of the first.
+   The stage is therefore sized by HEIGHT and lets the sheet's own
+   aspect ratio derive the width, which is what keeps one whole plan
+   in view and makes the next a step sideways instead of a scroll. */
+.dv2-pc {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(2.5rem, 5vw, 4rem);
+  gap: clamp(2rem, 4vw, 3.5rem);
   margin-top: clamp(2.5rem, 5vw, 4rem);
 }
 
 @media (min-width: 1000px) {
-  .dv2-plans {
-    grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
-    align-items: start;
+  .dv2-pc {
+    grid-template-columns: minmax(0, 0.44fr) minmax(0, 1fr);
+    align-items: center;
   }
 }
 
-.dv2-plan-picker {
+.dv2-pc-aside {
   display: flex;
   flex-direction: column;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.dv2-plan-option {
-  display: flex;
-  align-items: baseline;
   gap: 1.25rem;
-  width: 100%;
-  padding: 1.15rem 0;
-  border: 0;
-  border-top: 1px solid var(--dv2-line-light);
-  background: none;
-  color: inherit;
-  font-family: inherit;
-  text-align: left;
-  cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.dv2-plan-picker li:last-child .dv2-plan-option {
-  border-bottom: 1px solid var(--dv2-line-light);
-}
-
-.dv2-plan-option:hover,
-.dv2-plan-option:focus-visible {
-  opacity: 0.8;
-}
-
-.dv2-plan-option[aria-current='true'] {
-  opacity: 1;
-}
-
-.dv2-plan-name {
-  font-size: clamp(1.05rem, 1.6vw, 1.375rem);
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-}
-
-.dv2-plan-stage {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: clamp(1.5rem, 4vw, 3.5rem);
-  border: 1px solid var(--dv2-line-light);
-  /* Plain white, and the sheet is shown as it is. `multiply` was the
-     first attempt — drop the sheet, leave the linework on the warm
-     ground — and it looked right in theory. In practice these sheets
-     are not white: they carry a pale green-grey cast, and multiplying
-     that against a warm paper turned every drawing muddy sage. A
-     white plate with a hairline round it reads as a mounted drawing
-     and leaves the linework the colour the architect drew it. */
-  background: #fff;
-  cursor: zoom-in;
-}
-
-.dv2-plan-stage img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.dv2-plan-figures {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem 2.5rem;
-  margin-top: 1.75rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--dv2-line-light);
+  align-items: flex-start;
 }
 
 .dv2-disclaimer {
-  margin: 1.5rem 0 0;
+  margin: 0.5rem 0 0;
   max-width: 46ch;
   font-size: 11px;
   line-height: 1.7;
+  color: var(--dv2-on-light-dim);
+}
+
+.dv2-pc-name {
+  margin: 0;
+  font-size: clamp(1.6rem, 3.4vw, 2.75rem);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  animation: dv2-pc-name-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dv2-pc-name-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+}
+
+.dv2-pc-figs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem 2.25rem;
+  width: 100%;
+  padding-block: 1.25rem;
+  border-block: 1px solid var(--dv2-line-light);
+}
+
+/* Controls. Quiet by design: hairline circles and a row of ticks,
+   no chevron slabs. */
+
+.dv2-pc-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.dv2-pc-arrow {
+  display: grid;
+  place-items: center;
+  /* 44px is the floor for a hit target, and these are exactly that
+     even though the drawn circle reads smaller. */
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--dv2-line-light);
+  border-radius: 999px;
+  background: none;
+  color: var(--dv2-on-light);
+  cursor: pointer;
+  transition:
+    background-color 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dv2-pc-arrow svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: square;
+}
+
+.dv2-pc-arrow:hover {
+  border-color: var(--dv2-on-light);
+  background: var(--dv2-on-light);
+  color: var(--dv2-paper);
+}
+
+.dv2-pc-ticks {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.dv2-pc-tick {
+  /* The mark is a 1px hairline; the button around it is 44px tall so
+     it can actually be tapped. */
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.dv2-pc-tick::before {
+  content: '';
+  width: 100%;
+  height: 1px;
+  background: var(--dv2-on-light);
+  opacity: 0.28;
+  transition:
+    opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dv2-pc-tick[aria-selected='true']::before {
+  opacity: 1;
+  background: var(--dv2-sand);
+}
+
+.dv2-pc-tick:hover::before {
+  opacity: 0.7;
+}
+
+/* The stage. */
+
+.dv2-pc-stage {
+  display: flex;
+  justify-content: center;
+}
+
+.dv2-pc-frame {
+  position: relative;
+  display: block;
+  /* Height-led. The sheet's ratio supplies the width, so the frame is
+     always exactly one plan wide and never overflows sideways. */
+  height: min(66vh, 660px);
+  aspect-ratio: 1400 / 2489;
+  max-width: 100%;
+  padding: clamp(0.75rem, 1.5vw, 1.5rem);
+  border: 1px solid var(--dv2-line-light);
+  /* White, and the sheet shown as it is. Blending it into the warm
+     paper was tried and abandoned: these sheets carry a pale
+     green-grey cast, and multiplying that against a warm ground
+     turned every drawing muddy sage. */
+  background: #fff;
+  cursor: zoom-in;
+  /* Vertical swipes still scroll the page; only a clearly sideways
+     one pages the carousel. */
+  touch-action: pan-y;
+  overflow: hidden;
+}
+
+.dv2-pc-sheet {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* contain, never cover — a cropped floor plan is a wrong floor plan. */
+  object-fit: contain;
+  animation: dv2-pc-sheet-in 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes dv2-pc-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--dv2-pc-from, 3%));
+  }
+}
+
+.dv2-pc-hint {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 0.75rem;
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--dv2-on-light-dim);
+  background: linear-gradient(to top, rgb(255 255 255 / 0.92), rgb(255 255 255 / 0));
+  opacity: 0;
+  transition: opacity 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .dv2-pc-frame:hover .dv2-pc-hint,
+  .dv2-pc-frame:focus-visible .dv2-pc-hint {
+    opacity: 1;
+  }
+}
+
+/* On touch there is no hover to reveal it, so it simply stays. */
+@media (hover: none) {
+  .dv2-pc-hint {
+    opacity: 1;
+  }
+}
+
+/* --- Plan viewer (full screen) ---------------------------- */
+
+/* The ground carries NO animation, deliberately.
+   It used to fade in, which meant the element providing the blackout
+   was also the element whose opacity was in flight — so anything that
+   stalled that animation left the page legible straight through the
+   overlay. Splitting them is strictly safer: the ground is opaque the
+   moment it mounts, and the arrival is carried by the contents. */
+.dv2-pv {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  background: rgb(11 11 10 / 0.985);
+  color: var(--dv2-on-dark);
+}
+
+/* Nothing interactive fades in either, for the same reason and one
+   worse: a stalled fade on the ground is merely ugly, but a stalled
+   fade on the bar means no close button and no arrows. The controls
+   are present the instant the viewer mounts; only the sheet arrives
+   (see dv2-pv-sheet-in), which is content rather than a way out. */
+
+.dv2-pv-bar,
+.dv2-pv-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 0 0 auto;
+  padding: clamp(0.9rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2.5rem);
+}
+
+.dv2-pv-foot {
+  border-top: 1px solid var(--dv2-line-dark);
+}
+
+.dv2-pv-id {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.dv2-pv-name {
+  font-size: clamp(0.8125rem, 1.4vw, 1rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dv2-pv-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dv2-pv-mode {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--dv2-line-dark);
+  border-radius: 999px;
+  background: none;
+  color: var(--dv2-on-dark);
+  font-family: inherit;
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dv2-pv-mode:hover {
+  background: var(--dv2-sand);
+  color: var(--dv2-ink);
+}
+
+.dv2-pv-btn {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--dv2-line-dark);
+  border-radius: 999px;
+  background: none;
+  color: var(--dv2-on-dark);
+  cursor: pointer;
+  transition:
+    background-color 450ms cubic-bezier(0.16, 1, 0.3, 1),
+    color 450ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dv2-pv-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  stroke-linecap: square;
+}
+
+.dv2-pv-btn:hover {
+  background: var(--dv2-on-dark);
+  color: var(--dv2-ink);
+}
+
+.dv2-pv-meta {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   color: var(--dv2-clay);
+  text-align: center;
+}
+
+/* Two modes. Detail is the default: someone who opened a plan full
+   screen came to read it, and a 2489-tall drawing contained inside a
+   laptop viewport is about 380px wide — too small for the
+   dimensions. Fit is one tap away for the whole layout at a glance. */
+.dv2-pv-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 clamp(1rem, 3vw, 2.5rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  /* Sideways swipes are claimed for paging; vertical belongs here. */
+  touch-action: pan-y;
+}
+
+.dv2-pv-sheet {
+  display: block;
+  background: #fff;
+  animation: dv2-pv-sheet-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dv2-pv-scroll[data-mode='detail'] .dv2-pv-sheet {
+  /* Readable width, scrolling vertically. */
+  width: min(88vw, 820px);
+  height: auto;
+  align-self: flex-start;
+}
+
+.dv2-pv-scroll[data-mode='fit'] .dv2-pv-sheet {
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  height: 100%;
+  object-fit: contain;
+  align-self: center;
+}
+
+@keyframes dv2-pv-sheet-in {
+  from {
+    opacity: 0;
+  }
 }
 
 /* --- Place (location) ------------------------------------- */
@@ -1201,6 +1519,15 @@
    self-contained, and a rule that reaches across would couple the
    two designs this route exists to keep apart.  */
 
+/* The chapter rail only travels because the pin moves it. With no
+   motion the pin never runs, and a rail of `width: max-content`
+   inside `overflow: hidden` would simply lose chapters two and three
+   — the section would quietly drop two thirds of the amenities. So
+   it reverts to the vertical stack the small-screen layout already
+   uses, which needs nothing moving to be complete.
+   `flex` has to be reset too: `flex: 0 0 <width>` sets the basis on
+   the main axis, and in a column that axis is height — leaving it
+   would make every chapter 900px tall. */
 @media (prefers-reduced-motion: reduce) {
   .dv2 .dv2-hide {
     visibility: visible !important;
@@ -1208,6 +1535,26 @@
 
   .dv2 .dv2-progress {
     scale: 0 1;
+  }
+
+  .dv2 .dv2-pin {
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  .dv2 .dv2-chapters {
+    flex-direction: column;
+    width: auto;
+    max-width: 1680px;
+    margin-top: clamp(3rem, 6vw, 5rem);
+    margin-inline: auto;
+    gap: clamp(3.5rem, 7vw, 6rem);
+    will-change: auto;
+  }
+
+  .dv2 .dv2-chapter {
+    flex: 0 1 auto;
   }
 
   .dv2 *,
@@ -1222,7 +1569,32 @@
   visibility: visible !important;
 }
 
-[data-motion='off'] .dv2 .dv2-lead img,
-[data-motion='off'] .dv2 .dv2-plate-frame img {
-  transition: none;
+[data-motion='off'] .dv2 .dv2-pin {
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+[data-motion='off'] .dv2 .dv2-chapters {
+  flex-direction: column;
+  width: auto;
+  max-width: 1680px;
+  margin-top: clamp(3rem, 6vw, 5rem);
+  margin-inline: auto;
+  gap: clamp(3.5rem, 7vw, 6rem);
+  will-change: auto;
+}
+
+[data-motion='off'] .dv2 .dv2-chapter {
+  flex: 0 1 auto;
+}
+
+/* Matches the reduced-motion block above: with the switch off the
+   carousel's arrival animations and every hover transition sit at
+   rest rather than playing. */
+[data-motion='off'] .dv2 *,
+[data-motion='off'] .dv2 *::before,
+[data-motion='off'] .dv2 *::after {
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
 }
