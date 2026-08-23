@@ -1,31 +1,526 @@
 /* ===========================================================
-   Gallery carousel — only what Tailwind has no utility for.
-   =========================================================== */
+   Gallery — a curved 3D image wall.
+   ===========================================================
 
-/* The track is scrolled by drag, buttons and keys; the native bar would sit
-   under the cards and spoil the frame. Hiding it is safe here because the
-   progress bar and the arrows both expose the scroll position. */
-.gallery-track {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+   The composition is a cylinder. Eighteen slots sit on a ring of
+   radius --radius, each turned --unit further round than the last:
 
-  /* The track spans the viewport so the carousel is not confined to the middle
-     1600px of a wide monitor, but the first card must still line up with the
-     heading above it. This reproduces the page container's left edge: its
-     gutter, plus whatever margin the 1600px cap leaves once the viewport is
-     wider than that. Below 1600px the second term goes negative and the gutter
-     wins, which is exactly what the container does. */
-  --gallery-gutter: 1.25rem;
-  padding-left: var(--gallery-gutter);
-  padding-right: var(--gallery-gutter);
+       rotateY(i * --unit) translateZ(calc(-1 * --radius))
+
+   The viewer stands at the ring's centre, so the far half of the
+   cylinder reads as a concave wall wrapping around them. The slot
+   at 0deg faces the camera square on and is the farthest away, so
+   perspective renders it smallest; slots either side of it are
+   nearer the camera and progressively turned, so they render
+   taller and foreshortened, and the outermost pair runs past the
+   edge of the stage and is clipped. That size gradient is the
+   whole effect — perspective is doing the work, not per-card
+   sizing.
+
+   Two animations, both pure CSS, both on the same clock:
+
+     .g-ring   rotates 0 -> 360deg, carrying every slot round.
+     .g-slot   fades out across the near half of the cylinder,
+               which would otherwise be behind and beside the
+               camera. Each slot gets a negative animation-delay
+               of i/18 of the cycle, which is exactly its head
+               start round the ring, so its opacity is a function
+               of its angle to the viewer rather than of time.
+
+   Because the fade is phase-locked to the rotation this stays
+   correct indefinitely without a line of JavaScript, and both
+   animated properties (transform, opacity) are compositor-only.
+
+   Every number is a variable. Retune the geometry here; the
+   component knows none of it.  */
+
+.g-section {
+  /* This section is the page's one light band — a gallery wall
+     rather than a screen. Scoped locally, so the dark theme in
+     index.css is untouched. */
+  --ivory: #f1ede4;
+  --ivory-soft: #e6e0d3;
+  --ink: #16140f;
+  --ink-soft: #6d675c;
+
+  /* Angular pitch of one slot, and the number of slots in the
+     ring. 18 x 20deg closes the circle. */
+  --unit: 20deg;
+  --slots: 18;
+
+  /* --- The two numbers that set the composition ---------------
+
+     k = --radius / --card-w. Bounded below by the chord between
+     adjacent slots: 2 * R * sin(unit / 2) must be at least one
+     card wide or neighbours intersect in 3D. At 20deg that is
+     0.347R, so k >= 2.88. 2.95 leaves a hairline gap — the wall
+     reads continuous, with roughly 9px of ivory between cards at
+     1440px.
+
+     m = --persp / --radius. The camera distance, and so the
+     strength of the whole effect: the centre card renders at
+     m/(m+1) of its natural size and the pair at 60deg at
+     m/(m+0.5), which at m=0.9 is a 36% size gradient across the
+     visible arc. Raising m flattens it.
+
+     Together they fix the framing: with k=2.95 and m=0.9 the
+     stage edge wants to sit at 0.58R, which is why --card-w is
+     29.2vw on desktop. That is what puts seven cards across with
+     the outermost pair cut by the frame. Change either number and
+     --card-w has to be refitted.  */
+  --radius: calc(var(--card-w) * 2.95);
+  --persp: calc(var(--radius) * 0.9);
+  --card-h: calc(var(--card-w) * 1.389);
+
+  background: var(--ivory);
+  color: var(--ink);
+  padding-block: clamp(4.5rem, 9vw, 9rem);
+  overflow: clip;
+  /* Anchors the variant toggle. */
+  position: relative;
+}
+
+/* --- Variant toggle ----------------------------------------- */
+
+/* Shared by both galleries. It takes its colour from whichever
+   section it is inside, which is the reason it is rendered within
+   them rather than over them — the two have opposite grounds.
+
+   The right edge follows the page container rather than the
+   viewport, so on a wide monitor it lines up with the heading
+   above it instead of drifting out to the screen edge. Same
+   expression the V1 track used before it became a ring. */
+.g-variant {
+  position: absolute;
+  top: clamp(1.75rem, 4vw, 3.25rem);
+  right: max(1.25rem, calc((100vw - 1600px) / 2 + 1.5rem));
+  z-index: 3;
+
+  padding: 0.5rem 0.65rem;
+  border: 0;
+  background: none;
+  color: currentColor;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  /* Present but quiet, until it is looked for. */
+  opacity: 0.25;
+  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.g-variant:hover,
+.g-variant:focus-visible {
+  opacity: 1;
 }
 
 @media (min-width: 768px) {
-  .gallery-track {
-    --gallery-gutter: max(3.75rem, calc((100vw - 1600px) / 2 + 3.75rem));
+  .g-variant {
+    right: max(3rem, calc((100vw - 1600px) / 2 + 3rem));
   }
 }
 
-.gallery-track::-webkit-scrollbar {
-  display: none;
+@media (prefers-reduced-motion: reduce) {
+  .g-variant {
+    transition: none;
+  }
+}
+
+/* --- Heading ------------------------------------------------ */
+
+.g-head {
+  max-width: 1600px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3.75rem);
+  margin-bottom: clamp(2.75rem, 5.5vw, 5rem);
+  text-align: center;
+}
+
+.g-eyebrow {
+  margin: 0;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.g-title {
+  margin: clamp(0.85rem, 1.6vw, 1.4rem) 0 0;
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  /* The floor is low enough that a longer heading than this one
+     still fits on a 360px screen without the gutter giving way. */
+  font-size: clamp(1.5rem, 6.5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* --- Stage -------------------------------------------------- */
+
+/* Holds the perspective and does the clipping. It stays flat —
+   overflow forces transform-style back to flat regardless — and
+   the 3D space belongs to .g-ring inside it. `clip` rather than
+   `hidden` so this never becomes a scroll container: the outer
+   slots are meant to run off the edge, not be scrollable to. */
+.g-stage {
+  position: relative;
+  /* Sized to the tallest card that is still inside the frame (the
+     pair at 60deg, which render at 0.643 of --card-h). The steeper
+     ones beyond it are taller still, but by then they are off the
+     side of the stage and clipped horizontally anyway. */
+  height: calc(var(--card-h) * 0.74);
+  perspective: var(--persp);
+  perspective-origin: 50% 50%;
+  overflow: clip;
+}
+
+.g-ring {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform-style: preserve-3d;
+  /* The one element whose transform animates, and so the only one
+     worth promoting up front. Deliberately not set on the slots:
+     eighteen permanently-promoted layers cost real memory on a
+     phone, and their opacity animation gets composited without
+     the hint. */
+  will-change: transform;
+  animation: g-spin var(--spin) linear infinite;
+
+  /* Structural only — it must never be a hit target.
+     This element is inset:0, so its own box covers the stage, and
+     it sits at z=0 in the 3D space while every card is pushed back
+     to -(--radius). That puts an invisible full-stage surface in
+     front of the entire wall: it swallowed every hover and every
+     click, and because it has no background there was nothing to
+     see. Re-enabled on the cards below. (V2 never had this: its
+     cards sit in front of the ring's plane, not behind it.) */
+  pointer-events: none;
+}
+
+.g-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--card-w);
+  height: var(--card-h);
+  margin-left: calc(var(--card-w) / -2);
+  margin-top: calc(var(--card-h) / -2);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+
+  transform: rotateY(calc(var(--i) * var(--unit))) translateZ(calc(-1 * var(--radius)));
+
+  /* Same duration as the ring, offset by this slot's head start
+     round it, so the fade tracks angle rather than time. */
+  animation: g-arc var(--spin) linear infinite;
+  animation-delay: calc(-1 * var(--i) * var(--spin) / var(--slots));
+}
+
+/* --- Card --------------------------------------------------- */
+
+.g-card {
+  /* Takes back what .g-ring turned off. */
+  pointer-events: auto;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--ivory-soft);
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.g-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Held a touch past the frame so the drift on hover never
+     exposes an edge. */
+  transform: scale(1.06);
+  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Hover state -------------------------------------------- */
+
+/* Anything drawn inside a card lives in the card's own 3D space,
+   which perspective then shrinks: the front card renders at
+   m/(m+1) — about 0.47 — of its layout size, and the cards either
+   side of it are close to that. So type set here at a plain 11px
+   would reach the screen at 5px.
+
+   Everything below is therefore sized as a fraction of --card-w,
+   which both undoes that shrink and keeps the hover state in
+   proportion as the cylinder scales across breakpoints. The label
+   lands at roughly 12px on screen at every width. Setting these in
+   px instead would look correct in devtools and be illegible on
+   the page.  */
+.g-section {
+  --cue-size: calc(var(--card-w) * 0.055);
+  --cue-pad: calc(var(--card-w) * 0.075);
+}
+
+.g-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(10 9 7 / 0.78) 0%,
+    rgb(10 9 7 / 0.3) 42%,
+    rgb(10 9 7 / 0) 72%
+  );
+  opacity: 0;
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.g-cue {
+  position: absolute;
+  left: var(--cue-pad);
+  right: var(--cue-pad);
+  bottom: var(--cue-pad);
+  display: flex;
+  align-items: center;
+  gap: calc(var(--cue-size) * 0.7);
+  pointer-events: none;
+
+  font-size: var(--cue-size);
+  line-height: 1;
+  /* Sized and tracked to leave the label about 15% of the card's
+     inner width in hand. It has to hold on one line — wrapped, it
+     stops reading as a caption — and the fallback faces are wider
+     than Inter, so the slack is what keeps it on one line if the
+     webfont never arrives. */
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--ivory);
+
+  opacity: 0;
+  /* Rises as it fades in, a beat behind the veil. */
+  transform: translateY(calc(var(--cue-size) * 0.8));
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 70ms,
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 70ms;
+}
+
+.g-cue-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* A pointer anywhere over the stage pauses the ring, so the lift
+   reads as a considered pause rather than a fight with the
+   rotation.
+
+   translateZ rather than scale: it moves the card along the same
+   axis the cylinder is built on, so it stays exactly on the wall
+   instead of breaking out of it. At the desktop geometry 52px
+   towards the camera works out as roughly 2% larger, which is the
+   amount that reads as a lift without disturbing its neighbours. */
+@media (hover: hover) {
+  .g-card:hover {
+    transform: translateZ(52px);
+  }
+
+  .g-card:hover img {
+    transform: scale(1.1);
+  }
+
+  .g-card:hover .g-veil {
+    opacity: 1;
+  }
+
+  .g-card:hover .g-cue {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Keyboard parity: tabbing to a card shows the same state, on
+   touch devices too. */
+.g-card:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 6px;
+}
+
+.g-card:focus-visible .g-veil {
+  opacity: 1;
+}
+
+.g-card:focus-visible .g-cue {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Edge ---------------------------------------------------- */
+
+/* Only takes the hard cut off the very edge of the frame. Kept
+   deliberately narrow: the outermost cards are meant to read as
+   clipped by the viewport, not faded out of it. */
+.g-edge {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--ivory) 0%,
+    rgb(241 237 228 / 0) 4.5%,
+    rgb(241 237 228 / 0) 95.5%,
+    var(--ivory) 100%
+  );
+}
+
+/* --- Pausing ------------------------------------------------ */
+
+/* Hover, keyboard focus, an open lightbox and being off screen
+   all stop the ring. Pausing is free: a paused CSS animation
+   holds its composited state and costs nothing per frame. */
+@media (hover: hover) {
+  .g-stage:hover .g-ring,
+  .g-stage:hover .g-slot {
+    animation-play-state: paused;
+  }
+}
+
+.g-stage:focus-within .g-ring,
+.g-stage:focus-within .g-slot,
+.g-section[data-paused='true'] .g-ring,
+.g-section[data-paused='true'] .g-slot {
+  animation-play-state: paused;
+}
+
+/* --- Keyframes ---------------------------------------------- */
+
+@keyframes g-spin {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
+}
+
+/* Percentages are the slot's angle to the viewer over 360deg:
+   solid through the far arc, gone across the near one. The
+   crossings sit at 68deg and 292deg — by then a slot is past the
+   edge of the stage and steeply foreshortened, so nothing ever
+   appears or disappears anywhere the eye is resting. */
+@keyframes g-arc {
+  0%,
+  18.9% {
+    opacity: 1;
+  }
+  22.2%,
+  77.8% {
+    opacity: 0;
+  }
+  81.1%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* ===========================================================
+   Responsive geometry
+   ===========================================================
+
+   One variable moves: --card-w, in vw. Everything else is derived
+   from it, so the whole cylinder scales as one object and the
+   number of cards across the frame follows from how wide a card is
+   relative to the viewport. Bigger cards, fewer of them — which is
+   how mobile gets a simpler composition without a second layout.
+
+   The clamps in px stop the composition collapsing on very narrow
+   screens and running away on very wide ones.  */
+
+/* Mobile: the centre card takes a little over half the viewport,
+   with the pair at 20deg clipped to angled slivers either side.
+   Three cards, and only gentle rotations in view. */
+.g-section {
+  --card-w: clamp(260px, 116vw, 460px);
+  --radius-card: 14px;
+  --spin: 30s;
+}
+
+/* Tablet: five across, the pair at 40deg cut by the frame. */
+@media (min-width: 768px) {
+  .g-section {
+    --card-w: clamp(300px, 42vw, 430px);
+    --radius-card: 16px;
+    --spin: 32s;
+  }
+}
+
+/* Desktop: seven across, the pair at 60deg cut by the frame. */
+@media (min-width: 1280px) {
+  .g-section {
+    --card-w: clamp(380px, 29.2vw, 700px);
+    --radius-card: 20px;
+    --spin: 34s;
+  }
+}
+
+/* ===========================================================
+   Reduced motion
+   ===========================================================
+
+   No rotation, and no fade either — so the near half of the
+   cylinder has to be hidden statically instead. Slots 4..14
+   (80deg through 280deg) are the ones behind and beside the
+   camera; dropping them leaves slots 0..3 and 15..17, a still
+   seven-card fan at 0, ±20, ±40, ±60 that keeps the curved wall
+   fully intact. Both ends of the range matter: taking one slot
+   too many off the tail costs the fan its right-hand edge and it
+   stops being symmetric.  */
+
+@media (prefers-reduced-motion: reduce) {
+  .g-ring,
+  .g-slot {
+    animation: none;
+  }
+
+  .g-ring {
+    will-change: auto;
+  }
+
+  .g-slot:nth-child(n + 5):nth-child(-n + 15) {
+    display: none;
+  }
+
+  .g-card,
+  .g-card img,
+  .g-veil,
+  .g-cue {
+    transition: none;
+  }
+
+  /* The hover state still appears — it is what tells you the card
+     is a link — it just arrives without the slide. */
+  .g-cue {
+    transform: none;
+  }
+
+  @media (hover: hover) {
+    .g-card:hover {
+      transform: none;
+    }
+
+    .g-card:hover img {
+      transform: scale(1.06);
+    }
+  }
 }
