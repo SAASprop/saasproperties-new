@@ -6,7 +6,6 @@ import { Navbar } from '../components/Navbar'
 import { ScrollStory, StoryVariantSwitcher } from '../components/scroll-story'
 import { RevealProvider } from '../components/RevealProvider'
 import { MotionProvider } from '../components/MotionProvider'
-import { MotionToggle } from '../components/MotionToggle'
 import { Overview } from '../components/Overview'
 import { PropertyStats } from '../components/PropertyStats'
 import { Features } from '../components/Features'
@@ -63,7 +62,6 @@ export default function Index() {
       {/* Demo-only; renders nothing on a bare deployed link. */}
       <StoryVariantSwitcher />
 
-      <MotionToggle />
     </MotionProvider>
   )
 }

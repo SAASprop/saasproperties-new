@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { BRAND, FOOTER } from '../lib/content'
 import { useMotionDisabled } from '../lib/motion'
+import { ArrowUp } from 'lucide-react'
 
 /** Rise-and-fade, staggered by band so the footer arrives in reading order. */
 const BANDS = [0, 0.09, 0.18]
@@ -73,9 +74,10 @@ export function ContactFooter() {
           onClick={() =>
             window.scrollTo({ top: 0, behavior: motionOff ? 'auto' : 'smooth' })
           }
-          className="gradient-border-ring self-start rounded-full border border-stroke px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] text-text transition-colors duration-300 hover:bg-text/5"
+          className="gradient-border-ring inline-flex items-center gap-2 self-start rounded-full border border-stroke px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] text-text transition-colors duration-300 hover:bg-text/5"
         >
-          {FOOTER.backToTop} ↑
+          {FOOTER.backToTop}
+          <ArrowUp size={13} strokeWidth={1.25} aria-hidden="true" />
         </button>
       </motion.div>
     </footer>

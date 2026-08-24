@@ -66,9 +66,10 @@
 
 .dv2-eyebrow {
   margin: 0;
-  font-size: 10px;
-  font-weight: 400;
-  letter-spacing: 0.34em;
+  /* Sized as a signpost rather than a caption — see .eyebrow in index.css. */
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--dv2-sand);
 }
@@ -1597,4 +1598,9 @@
 [data-motion='off'] .dv2 *::after {
   transition-duration: 0.01ms !important;
   animation-duration: 0.01ms !important;
+}
+
+/* The gallery set switch, between the heading and the lead frame. */
+.dv2-switch {
+  margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
 }

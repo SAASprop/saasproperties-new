@@ -81,9 +81,10 @@
 
 .d2-kicker {
   margin: 0;
-  font-size: 9px;
-  font-weight: 400;
-  letter-spacing: 0.42em;
+  /* Sized as a signpost rather than a caption — see .eyebrow in index.css. */
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--d2-champagne);
 }
@@ -1189,4 +1190,9 @@
 
 [data-motion='off'] .d2 .d2-plate-frame img {
   transition: none;
+}
+
+/* The gallery set switch, under the section heading. */
+.d2-switch {
+  margin-top: clamp(1.5rem, 2.5vw, 2.25rem);
 }

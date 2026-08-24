@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { PROPERTY } from '../../lib/property'
 import { MediaLightbox, type OpenOrigin } from '../MediaLightbox'
+import { GallerySwitch } from '../Gallery/GallerySwitch'
+import { useGallerySets } from '../../hooks/useGallerySets'
 import { originOf } from '../Gallery/origin'
 
 const { gallery } = PROPERTY
@@ -23,6 +25,7 @@ const { gallery } = PROPERTY
  */
 export function Gallery() {
   const [viewer, setViewer] = useState<{ index: number; origin: OpenOrigin } | null>(null)
+  const { sets, activeId, select, items } = useGallerySets()
 
   return (
     <section id="d2-gallery">
@@ -35,6 +38,12 @@ export function Gallery() {
         >
           Inside <em>the tower</em>
         </h2>
+        <GallerySwitch
+          sets={sets}
+          activeId={activeId}
+          onSelect={select}
+          className="d2-switch"
+        />
       </div>
 
       <div
@@ -43,7 +52,7 @@ export function Gallery() {
         style={{ marginTop: 'clamp(2.5rem, 5vw, 4rem)', paddingBottom: 'var(--d2-band)' }}
       >
         <div className="d2-rail" data-k-rail>
-          {gallery.items.map((item, index) => (
+          {items.map((item, index) => (
             <button
               type="button"
               className="d2-plate"
@@ -69,7 +78,7 @@ export function Gallery() {
       </div>
 
       <MediaLightbox
-        items={gallery.items}
+        items={items}
         index={viewer?.index ?? null}
         origin={viewer?.origin ?? null}
         onClose={() => setViewer(null)}

@@ -1,7 +1,7 @@
-import { PROPERTY, type FeatureIcon } from '../../lib/property'
+import { PROPERTY, galleryFrame, type FeatureIcon } from '../../lib/property'
 import { FeatureGlyph } from '../FeatureGlyph'
 
-const { features, gallery } = PROPERTY
+const { features } = PROPERTY
 
 /**
  * The twelve amenities as a stack of cards that deal themselves.
@@ -23,7 +23,7 @@ const CARDS = [
     index: 'I',
     title: 'Water & air',
     line: 'The pool before work, the gym at dusk.',
-    image: gallery.items[3],
+    image: galleryFrame('Gym'),
     items: ['Infinity Pool', 'Gym With a Panoramic View', 'Sauna and Steam Room'],
   },
   {
@@ -31,7 +31,7 @@ const CARDS = [
     index: 'II',
     title: 'The off hours',
     line: 'Cinema, lounge, terrace — none of it depends on leaving.',
-    image: gallery.items[5],
+    image: galleryFrame('Cinema'),
     items: ['Private Cinema', 'Common Leisure Spaces', 'BBQ Area', "Children's Play Area"],
   },
   {
@@ -39,7 +39,7 @@ const CARDS = [
     index: 'III',
     title: 'Kept for you',
     line: 'The parcel waiting at the desk, around the clock.',
-    image: gallery.items[1],
+    image: galleryFrame('Lobby'),
     items: [
       '24/7 Concierge',
       '24/7 CCTV and Building Security',

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import type { Media } from '../lib/property'
 import { useMotionDisabled } from '../lib/motion'
 
@@ -290,7 +291,7 @@ export function MediaLightbox({
               className="grid h-11 w-11 place-items-center rounded-full border border-stroke text-text transition-colors duration-300 hover:border-text hover:bg-text hover:text-bg"
               aria-label="Close viewer"
             >
-              ✕
+              <X size={17} strokeWidth={1.25} aria-hidden="true" />
             </button>
           </motion.div>
 
@@ -305,7 +306,7 @@ export function MediaLightbox({
               aria-label="Previous item"
               {...chrome}
             >
-              ←
+              <ChevronLeft size={19} strokeWidth={1.25} aria-hidden="true" />
             </motion.button>
 
             {/* The frame the expansion drives. Sized by the flex row exactly as
@@ -378,7 +379,7 @@ export function MediaLightbox({
               aria-label="Next item"
               {...chrome}
             >
-              →
+              <ChevronRight size={19} strokeWidth={1.25} aria-hidden="true" />
             </motion.button>
           </div>
 
@@ -393,7 +394,7 @@ export function MediaLightbox({
               className="grid h-12 w-12 place-items-center rounded-full border border-stroke text-text"
               aria-label="Previous item"
             >
-              ←
+              <ChevronLeft size={21} strokeWidth={1.25} aria-hidden="true" />
             </button>
             <button
               type="button"
@@ -401,7 +402,7 @@ export function MediaLightbox({
               className="grid h-12 w-12 place-items-center rounded-full border border-stroke text-text"
               aria-label="Next item"
             >
-              →
+              <ChevronRight size={21} strokeWidth={1.25} aria-hidden="true" />
             </button>
           </motion.div>
         </motion.div>

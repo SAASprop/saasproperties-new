@@ -1,56 +1,262 @@
 /* ===========================================================
-   Floor plans — only what Tailwind has no utility for.
+   Floor plans — a snap carousel.
+
+   The dots are drawn by the browser from ::scroll-marker-group, and the active
+   card is styled through a scroll-state() container query, so neither needs
+   any script. The previous/next arrows are the exception: they were
+   ::scroll-button() too, but that pseudo disables itself at each end of the
+   track, so the row could only be walked to a stop and back. Looping needs
+   somewhere to loop to, so those two are real buttons in the component.
+
+   Support for the rest is narrow (Chromium 135+ at the time of writing; not
+   Safari or Firefox), so this is written as an enhancement over something
+   already usable: without ::scroll-*, the track is still a snap-scrolling row
+   with working arrows, the scrollbar is put back as the affordance, and every
+   card renders at full size because the scroll-state queries never match. See
+   the @supports blocks at the end.
    =========================================================== */
 
-/* Reveal state, shared with the Contact section's naming so the two read the
-   same way. Kept in CSS for the reduced-motion escape below: without it, anyone
-   asking for less motion is left looking at the cover panel. */
+/* Reveal state. Kept in CSS for the reduced-motion escape below: without it,
+   anyone asking for less motion is left looking at the cover panel. */
 .fp-hide {
   visibility: hidden;
 }
 
-/* Faint drafting grid behind the plan, so an empty frame still reads as a
-   drawing board rather than as a hole. Two repeating gradients rather than an
-   image: no request, and it scales at any size. */
-.fp-frame::before {
-  content: '';
+/* The shell is the container the track measures its end padding against. */
+.fp-carousel-shell {
+  container-type: inline-size;
+}
+
+.fp-carousel {
+  /* Sheets are 9:16, so a card is tall and narrow. */
+  --fp-card: 13.5rem;
+  --fp-btn: 2.75rem;
+
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--fp-card);
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  /* Room for the scaled-up active card and the marker row beneath. */
+  /* Inline padding is what lets the first and last cards reach the centre.
+     Spacer pseudo-elements cannot do it here: grid-auto-columns makes them one
+     card wide, which is short of half a track, so those two cards snapped
+     off-centre while the middle ones sat true. */
+  padding: 0.5rem max(0px, calc(50cqi - var(--fp-card) / 2)) 3.5rem;
+
+  /* The outer cards used to meet the track's edge at full opacity, which read as
+     the row having been cut off rather than continuing past the frame. Masked to
+     nothing at both ends instead, so it dissolves into the page.
+
+     A mask rather than gradient overlays: overlays would need their own ground
+     colour to fade to, which is wrong the moment the section's background
+     changes, and they would sit over the cards and swallow the clicks. */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 12%,
+    #000 88%,
+    transparent 100%
+  );
+
+  anchor-name: --fp-carousel;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+
+  /* ---- Marker row (the dots) ---- */
+  scroll-marker-group: after;
+
+  &::scroll-marker-group {
+    position: absolute;
+    position-anchor: --fp-carousel;
+    top: calc(anchor(bottom) - 3rem);
+    justify-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+  }
+
+  /* ---- Cards ---- */
+  > div {
+    position: relative;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    /* Lets the children below query whether this card is the snapped one. */
+    container-type: scroll-state;
+
+    display: grid;
+    grid-template-areas: 'img' 'title' 'meta';
+    text-align: center;
+
+    /* Which card the section opens on. */
+    &.fp-start {
+      scroll-initial-target: nearest;
+    }
+
+    > .fp-plate {
+      grid-area: img;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      padding-inline: 0.75rem;
+      transition:
+        scale 400ms ease-in-out,
+        opacity 400ms ease-in-out;
+      transform-origin: center center;
+
+      /* Anything not centred sits back and dims. */
+      @container not scroll-state(snapped: inline) {
+        scale: 0.82;
+        opacity: 0.45;
+      }
+    }
+
+    > .fp-name {
+      grid-area: title;
+      margin: 1.25rem 0 0;
+      white-space: nowrap;
+      transition:
+        scale 400ms ease-in-out,
+        opacity 400ms ease-in-out,
+        translate 400ms ease-in-out;
+
+      @container not scroll-state(snapped: inline) {
+        scale: 0.75;
+        opacity: 0;
+        translate: 0 -1.5rem;
+      }
+    }
+
+    > .fp-meta {
+      grid-area: meta;
+      margin: 0.5rem 0 0;
+      white-space: nowrap;
+      transition:
+        scale 400ms ease-in-out,
+        opacity 400ms ease-in-out;
+
+      @container not scroll-state(snapped: inline) {
+        scale: 0.75;
+        opacity: 0;
+      }
+    }
+
+    /* ---- The dot for this card ---- */
+    &::scroll-marker {
+      content: ' ';
+      width: 0.5rem;
+      aspect-ratio: 1;
+      border: 1px solid hsl(var(--champagne) / 0.5);
+      border-radius: 50%;
+      transition: all 200ms ease-in-out;
+      opacity: 0.5;
+    }
+
+    &::scroll-marker:target-current {
+      background-color: hsl(var(--champagne));
+      border-color: hsl(var(--champagne));
+      opacity: 1;
+    }
+
+    &::scroll-marker:where(:hover, :focus-visible) {
+      opacity: 1;
+    }
+
+    &::scroll-marker:focus-visible {
+      outline: 1px solid hsl(var(--champagne) / 0.6);
+      outline-offset: 4px;
+    }
+  }
+}
+
+/* On a phone the track is barely wider than one card, so buttons sitting at its
+   edges land on top of the drawing. Swiping is the natural gesture there and the
+   markers still show position, so the arrows are dropped below and the card takes
+   back the room they needed. */
+@media (max-width: 640px) {
+  .fp-carousel {
+    --fp-card: 16rem;
+  }
+}
+
+/* ---- The arrows ----
+   Real buttons rather than ::scroll-button, because those disable themselves at
+   each end of the track and the point of these is to wrap round. Positioned
+   against the shell, level with the middle of a sheet. */
+.fp-arrow {
   position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
-  background-size: 2.5rem 2.5rem;
-  /* Fades out at the edges so the grid never collides with the frame border. */
-  mask-image: radial-gradient(ellipse at center, #000 55%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse at center, #000 55%, transparent 100%);
+  top: 40%;
+  z-index: 2;
+  display: none;
+  width: var(--fp-btn);
+  aspect-ratio: 1;
+  place-content: center;
+  color: hsl(var(--text));
+  background-color: hsl(var(--bg) / 0.6);
+  border: 1px solid hsl(var(--stroke));
+  border-radius: 50%;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition:
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    color 200ms ease-in-out;
+}
+
+@media (min-width: 641px) {
+  .fp-arrow {
+    display: grid;
+  }
+}
+
+.fp-arrow:where(:hover, :focus-visible) {
+  background-color: hsl(var(--champagne));
+  border-color: hsl(var(--champagne));
+  color: hsl(var(--bg));
+}
+
+.fp-arrow:focus-visible {
+  outline: 1px solid hsl(var(--champagne) / 0.6);
+  outline-offset: 4px;
+}
+
+/* The sheet itself. A light document on a dark page, so it keeps a hairline
+   rather than bleeding into the background. */
+.fp-sheet {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---- Fallback ----
+   Without ::scroll-* there are no buttons and no dots, so the scrollbar has to
+   come back as the way to move through the track. The scroll-state queries also
+   never match, which leaves every card at full size — the right outcome, just
+   without the focus effect. */
+@supports not selector(::scroll-marker-group) {
+  .fp-carousel {
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--stroke)) transparent;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .fp-hide {
     visibility: visible !important;
   }
-}
 
-/* Each layout fades in as it is selected. Keyed on the drawing in the component,
-   so switching layouts replays this rather than doing nothing. */
-.fp-plan {
-  animation: fp-plan-in 0.5s ease-out both;
-}
-
-@keyframes fp-plan-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+  /* Snapping still helps; the smooth animation between snaps does not. */
+  .fp-carousel {
+    scroll-behavior: auto;
   }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .fp-plan {
-    animation: none;
+  .fp-carousel > div > * {
+    transition: none;
   }
 }

@@ -8,6 +8,8 @@ import { useMotionDisabled } from '../../lib/motion'
 import type { GalleryVariantId } from '../../hooks/useGalleryVariant'
 import { CardFace } from './CardFace'
 import { VariantToggle } from './VariantToggle'
+import { GallerySwitch } from './GallerySwitch'
+import { useGallerySets } from '../../hooks/useGallerySets'
 import { originOf } from './origin'
 import './v2.css'
 
@@ -75,11 +77,13 @@ export function GalleryV2({
   /** Set while a drag is actually moving, so the release does not open a card. */
   const dragged = useRef(false)
 
-  const count = gallery.items.length
+  const { sets, activeId, select, items } = useGallerySets()
+
+  const count = items.length
 
   const slots = useMemo(
-    () => Array.from({ length: SLOTS }, (_, i) => ({ item: gallery.items[i % count], i })),
-    [count],
+    () => Array.from({ length: SLOTS }, (_, i) => ({ item: items[i % count], i })),
+    [items, count],
   )
 
   useLayoutEffect(() => {
@@ -202,6 +206,7 @@ export function GalleryV2({
       <div className="v2-head">
         <p className="v2-eyebrow">{gallery.caption}</p>
         <h2 className="v2-title">{gallery.heading}</h2>
+        <GallerySwitch sets={sets} activeId={activeId} onSelect={select} className="v2-switch" />
       </div>
 
       <VariantToggle current={variant} onSelect={onSelectVariant} />
@@ -251,7 +256,7 @@ export function GalleryV2({
       <p className="v2-hint">Drag to explore</p>
 
       <MediaLightbox
-        items={gallery.items}
+        items={items}
         index={viewer?.index ?? null}
         origin={viewer?.origin ?? null}
         onClose={() => setViewer(null)}

@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PROPERTY } from "../../lib/property";
@@ -149,8 +150,38 @@ export function Location() {
                 />
               )}
 
-              {/* Vignette and inner hairline. Pointer-events off, so panning and
-                  zooming still reach the map. */}
+              {/* The whole frame opens the map.
+                  A link laid over the iframe rather than a click handler on it:
+                  a cross-origin frame cannot be listened to, and its own
+                  panning would otherwise swallow the gesture. That does mean
+                  the embed is no longer draggable in place — a deliberate
+                  trade, since one press now gets the visitor to the real map
+                  with directions and Street View rather than to a small tile of
+                  it. It is a real anchor, so it keeps the middle-click, the
+                  context menu and the focus ring for free. */}
+              <a
+                href={location.mapLinkUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="loc-map-open group absolute inset-0 z-10 block focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-2px] focus-visible:outline-champagne"
+              >
+                <span className="sr-only">
+                  Open the location of {PROPERTY.name} in Google Maps, in a new tab
+                </span>
+
+                {/* The affordance. Quiet until the frame is hovered, so the map
+                    is a map first and a button second. */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-bg/95 via-bg/70 to-transparent pb-5 pt-12 text-[11px] uppercase tracking-[0.22em] text-champagne opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100 group-focus-visible:opacity-100"
+                >
+                  Open in Google Maps
+                  <ArrowUpRight size={14} strokeWidth={1.25} />
+                </span>
+              </a>
+
+              {/* Vignette and inner hairline. Pointer-events off, so they never
+                  intercept the link above. */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/70 via-transparent to-bg/30"

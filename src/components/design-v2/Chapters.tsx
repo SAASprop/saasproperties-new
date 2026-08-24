@@ -1,4 +1,4 @@
-import { PROPERTY, type FeatureIcon } from '../../lib/property'
+import { PROPERTY, galleryFrame, type FeatureIcon } from '../../lib/property'
 import { FeatureGlyph } from '../FeatureGlyph'
 
 const { features } = PROPERTY
@@ -24,14 +24,14 @@ const CHAPTERS = [
     id: 'wellness',
     title: 'Wellness',
     line: 'The pool before work, the gym at dusk.',
-    image: PROPERTY.gallery.items[3],
+    image: galleryFrame('Spa'),
     items: ['Infinity Pool', 'Gym With a Panoramic View', 'Sauna and Steam Room'],
   },
   {
     id: 'leisure',
     title: 'Leisure',
     line: 'Cinema, lounge and terrace — none of it depends on leaving.',
-    image: PROPERTY.gallery.items[5],
+    image: galleryFrame('Cinema'),
     items: [
       'Private Cinema',
       'Common Leisure Spaces',
@@ -43,7 +43,7 @@ const CHAPTERS = [
     id: 'service',
     title: 'Service',
     line: 'The parcel waiting at the desk, around the clock.',
-    image: PROPERTY.gallery.items[2],
+    image: galleryFrame('Lobby'),
     items: [
       '24/7 Concierge',
       '24/7 CCTV and Building Security',

@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import { MotionProvider } from '../components/MotionProvider'
-import { MotionToggle } from '../components/MotionToggle'
 import { Chrome, Colophon } from '../components/design-v2/Chrome'
 import { Hero } from '../components/design-v2/Hero'
 import { Opening } from '../components/design-v2/Opening'
@@ -51,7 +50,6 @@ export default function DesignV2() {
         <Colophon />
       </div>
 
-      <MotionToggle />
     </MotionProvider>
   )
 }

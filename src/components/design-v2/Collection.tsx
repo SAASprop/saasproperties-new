@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { PROPERTY } from '../../lib/property'
 import { MediaLightbox, type OpenOrigin } from '../MediaLightbox'
+import { GallerySwitch } from '../Gallery/GallerySwitch'
+import { useGallerySets } from '../../hooks/useGallerySets'
 import { originOf } from '../Gallery/origin'
 
 const { gallery } = PROPERTY
@@ -24,7 +26,9 @@ const { gallery } = PROPERTY
 export function Collection() {
   const [viewer, setViewer] = useState<{ index: number; origin: OpenOrigin } | null>(null)
 
-  const [lead, ...plates] = gallery.items
+  const { sets, activeId, select, items } = useGallerySets()
+
+  const [lead, ...plates] = items
 
   const open = (index: number) => (event: React.MouseEvent<HTMLButtonElement>) =>
     setViewer({ index, origin: originOf(event) })
@@ -45,6 +49,13 @@ export function Collection() {
             </span>
           </h2>
 
+          <GallerySwitch
+            sets={sets}
+            activeId={activeId}
+            onSelect={select}
+            className="dv2-switch"
+          />
+
           <button
             type="button"
             className="dv2-lead dv2-hide"
@@ -62,7 +73,7 @@ export function Collection() {
             <span className="dv2-lead-caption">
               <span className="dv2-meta-value">{lead.title}</span>
               <span className="dv2-num">
-                01 / {String(gallery.items.length).padStart(2, '0')}
+                01 / {String(items.length).padStart(2, '0')}
               </span>
             </span>
           </button>
@@ -97,7 +108,7 @@ export function Collection() {
       </div>
 
       <MediaLightbox
-        items={gallery.items}
+        items={items}
         index={viewer?.index ?? null}
         origin={viewer?.origin ?? null}
         onClose={() => setViewer(null)}

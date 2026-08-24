@@ -41,6 +41,8 @@ export interface Property {
    * one still renders correctly.
    */
   displayLines: string[];
+  /** The property's own wordmark. White on transparency, for the dark theme. */
+  logo: string;
   /** Hero standfirst, shown before the scroll narrative begins. */
   summary: string;
   /** e.g. "Now selling" — rendered as a pill. */
@@ -186,17 +188,52 @@ export interface Location {
    * treatment is applied to the iframe from the outside.
    */
   mapEmbedUrl: string;
+  /**
+   * Where the map opens when it is pressed. A separate field because the `pb=`
+   * embed URL above is not a shareable link — pasted into a browser it renders
+   * a bare tile server response, not a map. This is the ordinary Maps URL, in
+   * the documented `?api=1` form so it hands off to the Google Maps app on a
+   * phone rather than opening a browser tab over it.
+   */
+  mapLinkUrl: string;
   /** Shown on the floating locator plate. */
   coordinates: string;
   /** Travel times. `minutes` is a number so it can be padded and set in type. */
   highlights: { label: string; minutes: number; icon: FeatureIcon }[];
 }
 
+/** One switchable group of photography. */
+export interface GallerySet {
+  /** Stable key, also used in the URL-free switch state. */
+  id: string;
+  /** What the switch shows. Keep it to one word — it sits in a tight row. */
+  label: string;
+  /** Order is the carousel order. Mixed video and stills is expected. */
+  items: (Media & { title: string })[];
+}
+
 export interface Gallery {
   caption: string;
   heading: string;
-  /** Order is the carousel order. Mixed video and stills is expected. */
-  items: (Media & { title: string })[];
+  /**
+   * The switchable groups, in the order the switch lists them. The first is what
+   * every gallery opens on.
+   *
+   * Every design on the site renders one set at a time and shares the switch, so
+   * adding, removing or reordering a set here changes all of them at once — and a
+   * gallery given a single set drops the switch on its own.
+   */
+  sets: GallerySet[];
+  /**
+   * Photographs the gallery does not show, but other sections borrow through
+   * `galleryFrame`.
+   *
+   * The amenity shots — lobby, gym, spa, cinema — live here. They were a third
+   * switchable set and are no longer offered as one, but the amenity cards on
+   * /design and /design-2 still illustrate themselves with them, so dropping the
+   * set could not mean dropping the pictures.
+   */
+  frames: (Media & { title: string })[];
 }
 
 export interface Overview {
@@ -232,6 +269,7 @@ export const PROPERTY: Property = {
   eyebrow: "Residential Tower",
   name: "Reem Eleven",
   displayLines: ["Reem", "Eleven"],
+  logo: asset("reem-eleven-logo.png"),
   summary:
     "A luxury residential tower at the heart of Reem Island — furnished studios through three-bedroom homes, with resort-style amenities and lavish living spaces.",
   status: "Now selling",
@@ -329,6 +367,8 @@ export const PROPERTY: Property = {
     mapEmbedUrl:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3630.4835865746802!2d54.40884007606291!3d24.503343678164107!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5e67003214be69%3A0xed5674879ad80be2!2sReem%20Eleven!5e0!3m2!1sen!2sae!4v1756272761966!5m2!1sen!2sae",
     // Read off the embed's own centre point, so the plate and the map agree.
+    mapLinkUrl:
+      "https://www.google.com/maps/search/?api=1&query=24.5033%2C54.4088",
     coordinates: "24.5033° N, 54.4088° E",
     highlights: [
       { label: "Health & Wellness Centers", minutes: 5, icon: "wellness" },
@@ -341,41 +381,41 @@ export const PROPERTY: Property = {
   },
 
   floorPlans: {
-    caption: '(Floor Plans)',
-    heading: 'Layouts',
+    caption: "(Floor Plans)",
+    heading: "Layouts",
     intro:
-      'Every home is delivered furnished. Choose a layout to see its plan, or take the full set away with you.',
+      "Every home is delivered furnished. Choose a layout to see its plan, or take the full set away with you.",
     // The client's own sheets, resized for the web from the 4500x8000 originals
     // (6.3 MB -> 0.9 MB); the originals stay in /public/floorplans. Areas are
     // transcribed from each sheet so the page and the drawing cannot disagree.
     plans: [
       {
-        label: 'Studio',
+        label: "Studio",
         baths: 1,
         totalSqm: 41.31,
         totalSqft: 444.66,
-        image: asset('floorplans/studio-web.jpg'),
+        image: asset("floorplans/studio-web.jpg"),
       },
       {
-        label: '1 Bedroom',
+        label: "1 Bedroom",
         baths: 2,
         totalSqm: 79.52,
         totalSqft: 855.95,
-        image: asset('floorplans/1bed-web.jpg'),
+        image: asset("floorplans/1bed-web.jpg"),
       },
       {
-        label: '2 Bedroom',
+        label: "2 Bedroom",
         baths: 3,
         totalSqm: 109.05,
         totalSqft: 1173.8,
-        image: asset('floorplans/2bed-web.jpg'),
+        image: asset("floorplans/2bed-web.jpg"),
       },
       {
-        label: '3 Bedroom',
+        label: "3 Bedroom",
         baths: 4,
         totalSqm: 202.57,
         totalSqft: 2180.41,
-        image: asset('floorplans/3bed-web.jpg'),
+        image: asset("floorplans/3bed-web.jpg"),
       },
     ],
     // TODO(asset): add the PDFs to /public and set the urls, e.g.
@@ -383,34 +423,39 @@ export const PROPERTY: Property = {
     // document instead of offering a download that would 404.
     downloads: [
       {
-        label: 'Download floor plan',
-        requestLabel: 'Request floor plan',
+        label: "Download floor plan",
+        requestLabel: "Request floor plan",
         url: null,
       },
-      { label: 'Download brochure', requestLabel: 'Request brochure', url: null },
+      {
+        label: "Download brochure",
+        requestLabel: "Request brochure",
+        url: null,
+      },
     ],
     disclaimer:
-      'Plans are illustrative and may not be to scale. Areas and layouts are approximate and subject to change.',
+      "Plans are illustrative and may not be to scale. Areas and layouts are approximate and subject to change.",
   },
 
   contact: {
-    caption: '(Enquire)',
-    headingLines: ['Register', 'Your', 'Interest'],
-    body:
-      'Get in touch with SAAS Properties to explore our luxury projects and tailored opportunities.',
-    formNote: 'Leave your details and our team will come back to you within one working day.',
-    submitLabel: 'Submit',
+    caption: "(Enquire)",
+    headingLines: ["Register", "Your", "Interest"],
+    body: "Get in touch with SAAS Properties to explore our luxury projects and tailored opportunities.",
+    formNote:
+      "Leave your details and our team will come back to you within one working day.",
+    submitLabel: "Submit",
     privacyNote:
-      'By sending this request you agree to our privacy policy. Your details are used only to answer your enquiry.',
+      "By sending this request you agree to our privacy policy. Your details are used only to answer your enquiry.",
     successMessage:
-      'Thank you — your request has been received. We will be in touch shortly.',
+      "Thank you — your request has been received. We will be in touch shortly.",
     handoffMessage:
-      'We have opened an email with your details. Send it and we will be in touch shortly.',
-    errorMessage: 'Something went wrong sending that. Please try again, or email us directly.',
+      "We have opened an email with your details. Send it and we will be in touch shortly.",
+    errorMessage:
+      "Something went wrong sending that. Please try again, or email us directly.",
     image: {
       // TODO(asset): frame from the reel, standing in until photography lands.
-      src: asset('reem-contact-bg.jpg'),
-      alt: 'The pool terrace at Reem Eleven, the city skyline beyond.',
+      src: asset("reem-contact-bg.jpg"),
+      alt: "The pool terrace at Reem Eleven, the city skyline beyond.",
     },
     // TODO(integration): no form backend exists yet. Until an endpoint is set
     // here the form composes a mail draft to BRAND.email instead, so a visitor
@@ -421,46 +466,147 @@ export const PROPERTY: Property = {
   gallery: {
     caption: "(Gallery)",
     heading: "Inside the tower",
-    // TODO(asset): stills are frames pulled from the reel, standing in until the
-    // photography shoot lands. Any 16:9 image drops straight in here.
-    items: [
+    /*
+     * Grouped by what is actually in the frame rather than by which folder the
+     * file arrived in: `public/gallery/exterior` holds three exteriors plus the
+     * gym, spa, lobby and cinema, which are interiors of the shared floors.
+     * Filing those four under "Exterior" would mean a visitor pressing Exterior
+     * and being shown a cinema, so they have their own set. Nothing was moved on
+     * disk — only the grouping here differs.
+     */
+    sets: [
       {
-        kind: "video",
-        mp4: REEM_VIDEO,
-        poster: REEM_POSTER,
-        title: "The film",
-        alt: "The Reem Eleven reel.",
+        id: "exterior",
+        label: "Exterior",
+        items: [
+          {
+            kind: "video",
+            mp4: REEM_VIDEO,
+            poster: REEM_POSTER,
+            title: "The film",
+            alt: "The Reem Eleven reel.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/exterior/reem-eleven-1.png"),
+            title: "Pool deck",
+            alt: "The infinity pool on the podium, a mature olive at its centre and the open sea beyond.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/exterior/reem-eleven-2.jpg"),
+            title: "Terrace",
+            alt: "The pool terrace with loungers along one edge and the Abu Dhabi skyline behind.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/exterior/reem-eleven-3.jpg"),
+            title: "Elevation",
+            alt: "The tower's facade at dusk, lit balconies stepping up against the city.",
+          },
+        ],
+      },
+      {
+        id: "interior",
+        label: "Interior",
+        items: [
+          {
+            kind: "image",
+            src: asset("gallery/interior/reem-eleven-int-1.jpg"),
+            title: "Living and dining",
+            alt: "An open living and dining room, herringbone floor and full-height glazing to the water.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/interior/reem-eleven-int-5.jpg"),
+            title: "Sitting room",
+            alt: "A sitting room with a green sofa, joinery wall and the sea through the glass.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/interior/reem-eleven-int-2.jpg"),
+            title: "Kitchen",
+            alt: "A dark timber kitchen with a stone island and four stools.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/interior/reem-eleven-int-6.jpg"),
+            title: "Open kitchen",
+            alt: "A pale timber kitchen open to the living space, pendants over the counter.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/interior/reem-eleven-int-3.jpg"),
+            title: "Principal bedroom",
+            alt: "The principal bedroom, upholstered headboard wall and the city lights beyond the glass.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/interior/reem-eleven-int-7.jpg"),
+            title: "Second bedroom",
+            alt: "A second bedroom in pale tones, artwork above the bed and a terrace beyond.",
+          },
+          {
+            kind: "image",
+            src: asset("gallery/interior/reem-eleven-int-4.jpg"),
+            title: "Bathroom",
+            alt: "A marble bathroom with a freestanding stone tub and twin lit mirrors.",
+          },
+        ],
+      },
+    ],
+    /*
+     * Not offered as a switchable set: a visitor choosing between Exterior and
+     * Interior is choosing between the building and the homes, and a third
+     * option for the shared floors muddied that. The pictures stay because the
+     * amenity cards on the other two designs are built out of them.
+     */
+    frames: [
+      {
+        kind: "image",
+        src: asset("gallery/exterior/reem-eleven-6.jpg"),
+        title: "Lobby",
+        alt: "The residents' lobby, reception desk under the Reem Eleven mark and low seating.",
       },
       {
         kind: "image",
-        src: asset("reem-gallery-1.jpg"),
-        title: "Approach",
-        alt: "The tower seen from the boulevard, palms along the frontage.",
+        src: asset("gallery/exterior/reem-eleven-4.jpg"),
+        title: "Gym",
+        alt: "The gym along a glazed wall, free weights and cardio in a timber-lined room.",
       },
       {
         kind: "image",
-        src: asset("reem-gallery-2.jpg"),
-        title: "Elevation",
-        alt: "The facade rising, balconies stepping up the full height.",
+        src: asset("gallery/exterior/reem-eleven-5.jpg"),
+        title: "Spa",
+        alt: "The spa lounge, a curved sofa and slatted timber walls under soft light.",
       },
       {
         kind: "image",
-        src: asset("reem-gallery-3.jpg"),
-        title: "Pool deck",
-        alt: "The pool deck with the city skyline beyond.",
-      },
-      {
-        kind: "image",
-        src: asset("reem-gallery-4.jpg"),
-        title: "Balconies",
-        alt: "Screened balconies in close-up, the sea visible past the frame.",
-      },
-      {
-        kind: "image",
-        src: asset("reem-gallery-5.jpg"),
-        title: "Podium",
-        alt: "The podium level from above, pool and planted terraces.",
+        src: asset("gallery/exterior/reem-eleven-7.jpg"),
+        title: "Cinema",
+        alt: "The private cinema, tiered seating and an acoustic timber ceiling.",
       },
     ],
   },
 };
+
+/**
+ * One gallery frame by title, for the sections that borrow a photograph rather
+ * than show the whole set — the amenity cards on the other two designs.
+ *
+ * By title rather than by index: those cards used to read `gallery.items[3]`,
+ * which quietly picked a different picture every time the gallery was reordered
+ * and had them illustrating "the pool before work" with a balcony. A title is
+ * stable, and a wrong one fails loudly here instead of silently on the page.
+ */
+export function galleryFrame(title: string): Media & { title: string } {
+  const pools = [
+    ...PROPERTY.gallery.sets.map((set) => set.items),
+    PROPERTY.gallery.frames,
+  ];
+  for (const pool of pools) {
+    const found = pool.find((item) => item.title === title);
+    if (found) return found;
+  }
+  throw new Error(`galleryFrame: no gallery item titled "${title}"`);
+}

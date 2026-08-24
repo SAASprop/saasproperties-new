@@ -1,0 +1,109 @@
+/* ===========================================================
+   The gallery switch — Exterior / Interior / Amenities.
+
+   Shared by every design on the site, so it takes its palette from whichever
+   section it is sitting in through the --gs-* variables below rather than
+   naming colours of its own. The defaults are for a dark ground, which is what
+   all four hosts currently are; a light section only has to redefine the four.
+   =========================================================== */
+
+.gs {
+  --gs-ink: hsl(var(--text));
+  --gs-quiet: hsl(var(--muted));
+  --gs-lit: hsl(var(--champagne));
+  --gs-on-lit: hsl(var(--bg));
+  --gs-hairline: hsl(var(--champagne) / 0.28);
+  --gs-ground: hsl(var(--bg) / 0.35);
+
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border: 1px solid var(--gs-hairline);
+  border-radius: 999px;
+  background-color: var(--gs-ground);
+  /* The frames behind it are photographs, so the control needs its own ground to
+     stay legible; blur keeps that from reading as a solid bar laid on top. */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.gs-opt {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45em;
+  margin: 0;
+  padding: 0.62rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--gs-quiet);
+  font-family: inherit;
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gs-opt:where(:hover, :focus-visible) {
+  color: var(--gs-ink);
+}
+
+.gs-opt[data-on='true'] {
+  color: var(--gs-on-lit);
+}
+
+.gs-opt:focus-visible {
+  outline: 1px solid var(--gs-lit);
+  outline-offset: 3px;
+}
+
+/* The marker that travels. Behind the text, hence the negative z-index against
+   the option's own isolation. */
+.gs-marker {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 999px;
+  background-color: var(--gs-lit);
+  box-shadow: 0 0.5rem 1.5rem -0.5rem hsl(var(--champagne) / 0.55);
+}
+
+.gs-label {
+  font-weight: 500;
+}
+
+/* The frame count, set smaller and lighter — a note on the label, not part of
+   it. Dropped on a phone, where the row needs the width more than the detail. */
+.gs-count {
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+  .gs-opt {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.16em;
+  }
+
+  .gs-count {
+    display: none;
+  }
+}
+
+/* A light-ground host — the ivory gallery wall — redefines only the palette. */
+.gs[data-tone='light'] {
+  --gs-ink: var(--ink, #16140f);
+  --gs-quiet: var(--ink-soft, #6d675c);
+  --gs-lit: var(--ink, #16140f);
+  --gs-on-lit: var(--ivory, #f1ede4);
+  --gs-hairline: color-mix(in srgb, var(--ink, #16140f) 20%, transparent);
+  --gs-ground: transparent;
+}

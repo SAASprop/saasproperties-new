@@ -106,8 +106,66 @@
     opacity: 1;
   }
 
+  /**
+   * The section label — (Overview), (Features), (Floor Plans).
+   *
+   * It was 10px in muted grey, which is a caption rather than a signpost: at
+   * arm's length on a laptop it read as decoration and the reader could not
+   * tell which section they had arrived at. It is now half again the size, in
+   * champagne rather than grey, and carries a short rule that leads into the
+   * word so it holds its own above the display type underneath.
+   *
+   * inline-flex, so the rule sits on the text's own line and the label centres
+   * as one object wherever the parent is centred.
+   */
   .eyebrow {
-    @apply text-[10px] uppercase tracking-[0.3em] text-muted;
+    @apply inline-flex items-center gap-3.5 text-[0.9375rem] font-medium uppercase leading-none tracking-[0.22em] text-champagne;
+  }
+
+  .eyebrow::before {
+    content: '';
+    /* Drawn from the champagne to nothing, so it reads as leading into the
+       word rather than as a bar stuck to it. */
+    @apply block h-px w-8 shrink-0 bg-gradient-to-r from-champagne/70 to-champagne/10;
+  }
+
+  /**
+   * The navbar's travelling highlight.
+   *
+   * One pool of light for the whole pill rather than one per link: it follows
+   * the pointer across the bar, so the bar reads as a single lit surface rather
+   * than six buttons taking turns. Position and fade are driven from the
+   * component with gsap.quickTo — see Navbar.tsx — because a CSS transition
+   * cannot follow a moving pointer without restarting on every event.
+   *
+   * z-index -1 inside an isolated container: an element paints its own
+   * background first and its negative-z children after it, so this sits over
+   * the pill's ground and under the labels without either of them needing a
+   * stacking context.
+   */
+  .nav-lume {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: -1;
+    /* A square box with a radial fill, so it stays circular whatever the bar's
+       height, and wide enough to sit under a whole label. The negative margins
+       centre it on its own origin, which is what lets the component animate a
+       bare x translation. */
+    width: 7.5rem;
+    aspect-ratio: 1;
+    margin-top: -3.75rem;
+    margin-left: -3.75rem;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at center,
+      hsl(0 0% 100% / 0.11) 0%,
+      hsl(0 0% 100% / 0.06) 45%,
+      hsl(0 0% 100% / 0.015) 68%,
+      transparent 82%
+    );
+    opacity: 0;
+    pointer-events: none;
   }
 
   /**

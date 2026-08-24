@@ -35,13 +35,19 @@
    component knows none of it.  */
 
 .g-section {
-  /* This section is the page's one light band — a gallery wall
-     rather than a screen. Scoped locally, so the dark theme in
-     index.css is untouched. */
-  --ivory: #f1ede4;
-  --ivory-soft: #e6e0d3;
-  --ink: #16140f;
-  --ink-soft: #6d675c;
+  /* The section reads as a lit room rather than a lightbox: the
+     photographs are the only bright thing in it, which is how a
+     gallery is actually hung. It was an ivory band, and that band
+     was the one place the page broke its own darkness — against
+     the sections either side it read as a different site.
+
+     The names are kept: the ring's own rules refer to them, and
+     they are the section's ground and its ink whichever way round
+     the values go. */
+  --ivory: hsl(var(--bg));
+  --ivory-soft: hsl(var(--surface));
+  --ink: hsl(var(--text));
+  --ink-soft: hsl(var(--muted));
 
   /* Angular pitch of one slot, and the number of slots in the
      ring. 18 x 20deg closes the circle. */
@@ -63,18 +69,18 @@
      m/(m+0.5), which at m=0.9 is a 36% size gradient across the
      visible arc. Raising m flattens it.
 
-     Together they fix the framing: with k=2.95 and m=0.9 the
-     stage edge wants to sit at 0.58R, which is why --card-w is
-     29.2vw on desktop. That is what puts seven cards across with
-     the outermost pair cut by the frame. Change either number and
-     --card-w has to be refitted.  */
+     k and m are scale-free: every length below derives from
+     --card-w, so shrinking it shrinks the whole cylinder without
+     re-cutting the composition. What --card-w does set is how much
+     of the frame the wall fills, and so how many cards are across
+     it — see the responsive block at the foot of this file.  */
   --radius: calc(var(--card-w) * 2.95);
   --persp: calc(var(--radius) * 0.9);
   --card-h: calc(var(--card-w) * 1.389);
 
   background: var(--ivory);
   color: var(--ink);
-  padding-block: clamp(4.5rem, 9vw, 9rem);
+  padding-block: clamp(3.5rem, 5.5vw, 5.5rem);
   overflow: clip;
   /* Anchors the variant toggle. */
   position: relative;
@@ -133,16 +139,49 @@
   max-width: 1600px;
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 5vw, 3.75rem);
-  margin-bottom: clamp(2.75rem, 5.5vw, 5rem);
+  margin-bottom: clamp(1.75rem, 3vw, 2.75rem);
   text-align: center;
 }
 
+/* The section label. Matched to .eyebrow in index.css — sized as a
+   signpost, in champagne, with a rule leading into it — but written
+   out here because the ring's stylesheet is standalone and this one
+   is centred, so the rule wants to be on both sides. */
 .g-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
   margin: 0;
-  font-size: 10px;
-  letter-spacing: 0.3em;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--ink-soft);
+  color: hsl(var(--champagne));
+}
+
+.g-eyebrow::before,
+.g-eyebrow::after {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 1px;
+  flex-shrink: 0;
+  background: linear-gradient(
+    to right,
+    hsl(var(--champagne) / 0.1),
+    hsl(var(--champagne) / 0.7)
+  );
+}
+
+.g-eyebrow::after {
+  transform: scaleX(-1);
+}
+
+/* --- Set switch --------------------------------------------- */
+
+.g-switch {
+  margin-top: clamp(1.1rem, 2vw, 1.6rem);
 }
 
 .g-title {
@@ -396,8 +435,14 @@
   }
 }
 
-.g-stage:focus-within .g-ring,
-.g-stage:focus-within .g-slot,
+/* :focus-visible, not :focus-within. Closing the lightbox restores focus to the
+   card it was opened from, which is inside the stage — with :focus-within that
+   left the ring paused for good after every mouse-driven close, since nothing
+   the visitor did next moved focus out. :focus-visible is not set by a
+   programmatic focus() following a click, so the ring resumes on close, while a
+   keyboard visitor tabbing through the cards still gets the pause. */
+.g-stage:has(:focus-visible) .g-ring,
+.g-stage:has(:focus-visible) .g-slot,
 .g-section[data-paused='true'] .g-ring,
 .g-section[data-paused='true'] .g-slot {
   animation-play-state: paused;
@@ -451,7 +496,7 @@
    with the pair at 20deg clipped to angled slivers either side.
    Three cards, and only gentle rotations in view. */
 .g-section {
-  --card-w: clamp(260px, 116vw, 460px);
+  --card-w: clamp(240px, 104vw, 420px);
   --radius-card: 14px;
   --spin: 30s;
 }
@@ -459,7 +504,7 @@
 /* Tablet: five across, the pair at 40deg cut by the frame. */
 @media (min-width: 768px) {
   .g-section {
-    --card-w: clamp(300px, 42vw, 430px);
+    --card-w: clamp(270px, 35vw, 380px);
     --radius-card: 16px;
     --spin: 32s;
   }
@@ -468,7 +513,7 @@
 /* Desktop: seven across, the pair at 60deg cut by the frame. */
 @media (min-width: 1280px) {
   .g-section {
-    --card-w: clamp(380px, 29.2vw, 700px);
+    --card-w: clamp(320px, 23vw, 540px);
     --radius-card: 20px;
     --spin: 34s;
   }

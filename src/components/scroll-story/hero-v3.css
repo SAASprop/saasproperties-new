@@ -152,9 +152,16 @@
   /* Upright, not the site-wide italic: the source design sets this word as a
      roman uppercase serif. index.html loads the upright cut for it. */
   font-style: normal;
-  /* The source pinned this at 27rem against a global fluid root. Sized off the
-     local unit instead so it tracks the viewport without touching the page. */
-  font-size: calc(var(--v3-unit) * 17);
+  /* The same expression as .dv2-hero-name on /design — not --dv2-display, which
+     is that page's general display size and runs larger than its own hero. It is
+     copied rather than referenced because the variable is scoped to the .dv2
+     tree and would resolve to nothing here; the two hero names are meant to
+     match, so if one moves the other has to move with it.
+
+     It replaces `calc(var(--v3-unit) * 17)`, which the source design pinned at
+     27rem against a global fluid root — about 204px at 1440 and 272px at 1920,
+     where the two stacked words filled most of the screen. */
+  font-size: clamp(2rem, 6.4vw, 7rem);
   font-weight: 400;
   line-height: 0.85;
   letter-spacing: -0.06em;
@@ -162,9 +169,11 @@
   color: #fff;
 }
 
+/* The clamp above already handles the phone, so only the tracking is loosened
+   here — at the small end the -0.06em set for display sizes closes the letters
+   up too far. */
 @media (max-width: 767px) {
   .hero-v3__title {
-    font-size: calc(var(--v3-unit) * 9);
     line-height: 1;
     letter-spacing: -0.04em;
   }

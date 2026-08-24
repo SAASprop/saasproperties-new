@@ -2,6 +2,7 @@ import { Fragment, useState } from 'react'
 import { BRAND } from '../../lib/content'
 import { PROPERTY } from '../../lib/property'
 import { useEnquiry } from '../../lib/enquiry'
+import { ArrowRight } from 'lucide-react'
 
 const { contact } = PROPERTY
 
@@ -148,7 +149,7 @@ export function Enquiry() {
               <span>
                 {status === 'sending' ? 'Sending' : 'Request private consultation'}
               </span>
-              <span aria-hidden="true">→</span>
+              <ArrowRight size={16} strokeWidth={1.25} aria-hidden="true" />
             </button>
 
             {message && (
