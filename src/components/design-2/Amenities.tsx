@@ -23,7 +23,7 @@ const CARDS = [
     index: 'I',
     title: 'Water & air',
     line: 'The pool before work, the gym at dusk.',
-    image: galleryFrame('Gym'),
+    image: galleryFrame('Pool deck'),
     items: ['Infinity Pool', 'Gym With a Panoramic View', 'Sauna and Steam Room'],
   },
   {
@@ -31,7 +31,7 @@ const CARDS = [
     index: 'II',
     title: 'The off hours',
     line: 'Cinema, lounge, terrace — none of it depends on leaving.',
-    image: galleryFrame('Cinema'),
+    image: galleryFrame('Terrace bar'),
     items: ['Private Cinema', 'Common Leisure Spaces', 'BBQ Area', "Children's Play Area"],
   },
   {
@@ -39,7 +39,7 @@ const CARDS = [
     index: 'III',
     title: 'Kept for you',
     line: 'The parcel waiting at the desk, around the clock.',
-    image: galleryFrame('Lobby'),
+    image: galleryFrame('Elevation'),
     items: [
       '24/7 Concierge',
       '24/7 CCTV and Building Security',

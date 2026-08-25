@@ -224,16 +224,6 @@ export interface Gallery {
    * gallery given a single set drops the switch on its own.
    */
   sets: GallerySet[];
-  /**
-   * Photographs the gallery does not show, but other sections borrow through
-   * `galleryFrame`.
-   *
-   * The amenity shots — lobby, gym, spa, cinema — live here. They were a third
-   * switchable set and are no longer offered as one, but the amenity cards on
-   * /design and /design-2 still illustrate themselves with them, so dropping the
-   * set could not mean dropping the pictures.
-   */
-  frames: (Media & { title: string })[];
 }
 
 export interface Overview {
@@ -504,6 +494,12 @@ export const PROPERTY: Property = {
             title: "Elevation",
             alt: "The tower's facade at dusk, lit balconies stepping up against the city.",
           },
+          {
+            kind: "image",
+            src: asset("gallery/exterior/reem-eleven-4.jpg"),
+            title: "Terrace bar",
+            alt: "The shaded terrace bar beside the pool, loungers along the water and the sea beyond.",
+          },
         ],
       },
       {
@@ -554,40 +550,7 @@ export const PROPERTY: Property = {
           },
         ],
       },
-    ],
-    /*
-     * Not offered as a switchable set: a visitor choosing between Exterior and
-     * Interior is choosing between the building and the homes, and a third
-     * option for the shared floors muddied that. The pictures stay because the
-     * amenity cards on the other two designs are built out of them.
-     */
-    frames: [
-      {
-        kind: "image",
-        src: asset("gallery/exterior/reem-eleven-6.jpg"),
-        title: "Lobby",
-        alt: "The residents' lobby, reception desk under the Reem Eleven mark and low seating.",
-      },
-      {
-        kind: "image",
-        src: asset("gallery/exterior/reem-eleven-4.jpg"),
-        title: "Gym",
-        alt: "The gym along a glazed wall, free weights and cardio in a timber-lined room.",
-      },
-      {
-        kind: "image",
-        src: asset("gallery/exterior/reem-eleven-5.jpg"),
-        title: "Spa",
-        alt: "The spa lounge, a curved sofa and slatted timber walls under soft light.",
-      },
-      {
-        kind: "image",
-        src: asset("gallery/exterior/reem-eleven-7.jpg"),
-        title: "Cinema",
-        alt: "The private cinema, tiered seating and an acoustic timber ceiling.",
-      },
-    ],
-  },
+    ],  },
 };
 
 /**
@@ -600,12 +563,8 @@ export const PROPERTY: Property = {
  * stable, and a wrong one fails loudly here instead of silently on the page.
  */
 export function galleryFrame(title: string): Media & { title: string } {
-  const pools = [
-    ...PROPERTY.gallery.sets.map((set) => set.items),
-    PROPERTY.gallery.frames,
-  ];
-  for (const pool of pools) {
-    const found = pool.find((item) => item.title === title);
+  for (const set of PROPERTY.gallery.sets) {
+    const found = set.items.find((item) => item.title === title);
     if (found) return found;
   }
   throw new Error(`galleryFrame: no gallery item titled "${title}"`);

@@ -17,21 +17,26 @@ const { features } = PROPERTY
  *
  * The lines are drawn from the section's own intro copy ("the pool before work,
  * the gym at dusk, the parcel waiting at the desk") or restate what the list
- * already says. Nothing here claims anything the property record does not.
+ * already says. Nothing here claims anything the property record does not. *
+ * TODO(asset): these illustrate themselves with exteriors because the amenity
+ * photography — gym, spa, lobby, cinema — is not in the repo. Those four files
+ * were deleted from public/gallery/exterior and had never been committed, so the
+ * cards pointed at URLs that 404ed once deployed. Point each card back at its
+ * own subject as soon as the photography lands.
  */
 const CHAPTERS = [
   {
     id: 'wellness',
     title: 'Wellness',
     line: 'The pool before work, the gym at dusk.',
-    image: galleryFrame('Spa'),
+    image: galleryFrame('Pool deck'),
     items: ['Infinity Pool', 'Gym With a Panoramic View', 'Sauna and Steam Room'],
   },
   {
     id: 'leisure',
     title: 'Leisure',
     line: 'Cinema, lounge and terrace — none of it depends on leaving.',
-    image: galleryFrame('Cinema'),
+    image: galleryFrame('Terrace bar'),
     items: [
       'Private Cinema',
       'Common Leisure Spaces',
@@ -43,7 +48,7 @@ const CHAPTERS = [
     id: 'service',
     title: 'Service',
     line: 'The parcel waiting at the desk, around the clock.',
-    image: galleryFrame('Lobby'),
+    image: galleryFrame('Elevation'),
     items: [
       '24/7 Concierge',
       '24/7 CCTV and Building Security',
