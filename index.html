@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <!-- Root-relative, not "./": Vite rewrites a leading slash to the configured
+         base, so this resolves to /saasproperties-new/favicon.ico from any route.
+         A relative path is resolved against the current URL instead, which is a
+         different directory on /design than it is on /. -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0a0a" />
     <meta
