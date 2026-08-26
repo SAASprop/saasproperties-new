@@ -331,6 +331,12 @@ export function MediaLightbox({
                 }
                 transition={{ duration: reducedMotion ? 0.15 : 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
+                {/* The caption sits on the media, so the frame has to be the
+                    thing it is positioned against. inline-flex, so the box
+                    shrink-wraps whatever is inside it rather than taking the
+                    figure's full width — otherwise the overlay would run out
+                    past the edges of a portrait image. */}
+                <span className="relative inline-flex min-h-0 min-w-0">
                 {item.kind === 'video' ? (
                   <video
                     src={item.mp4}
@@ -365,9 +371,23 @@ export function MediaLightbox({
                   />
                 )}
 
-                <figcaption className="mt-5 shrink-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted">
-                  {item.title}
+                {/* On the image, and never beside it.
+                    A video puts its controls along the bottom edge, so for one
+                    the panel goes to the top instead — covering a play button
+                    with a caption would be trading a label for the control the
+                    viewer actually needs. The gradient runs from the caption
+                    edge outwards in each case, and the blur is clipped to the
+                    panel so the photograph behind it stays sharp. */}
+                <figcaption
+                  className={`pointer-events-none absolute inset-x-0 flex items-end rounded-lg px-5 text-[0.6875rem] uppercase tracking-[0.28em] text-white ${
+                    item.kind === 'video'
+                      ? 'top-0 rounded-b-none bg-gradient-to-b from-black/85 via-black/45 to-transparent pb-8 pt-4'
+                      : 'bottom-0 rounded-t-none bg-gradient-to-t from-black/85 via-black/45 to-transparent pb-4 pt-10'
+                  }`}
+                >
+                  <span className="w-full [backdrop-filter:blur(2px)]">{item.title}</span>
                 </figcaption>
+                </span>
               </motion.figure>
               </AnimatePresence>
             </div>

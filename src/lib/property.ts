@@ -292,7 +292,7 @@ export const PROPERTY: Property = {
   cta: { label: "Book a viewing", targetId: "contact" },
 
   overview: {
-    caption: "(Overview)",
+    caption: "Overview",
     heading: [
       { text: "furnished living" },
       { text: "at the heart of", italic: true },
@@ -319,7 +319,7 @@ export const PROPERTY: Property = {
   },
 
   features: {
-    caption: "(Features)",
+    caption: "Features",
     heading: "Everything on site",
     intro: [
       "Reem Eleven is built around the parts of a day that happen outside the apartment — the pool before work, the gym at dusk, the parcel waiting at the desk.",
@@ -347,7 +347,7 @@ export const PROPERTY: Property = {
   },
 
   location: {
-    caption: "(Location)",
+    caption: "Location",
     kicker: "Reem Eleven Location",
     heading: "Living Beyond Limits",
     // Cut to three lines so the section holds to one screen. The full paragraph
@@ -371,7 +371,7 @@ export const PROPERTY: Property = {
   },
 
   floorPlans: {
-    caption: "(Floor Plans)",
+    caption: "Floor Plans",
     heading: "Layouts",
     intro:
       "Every home is delivered furnished. Choose a layout to see its plan, or take the full set away with you.",
@@ -428,11 +428,11 @@ export const PROPERTY: Property = {
   },
 
   contact: {
-    caption: "(Enquire)",
+    caption: "Enquire",
     headingLines: ["Register", "Your", "Interest"],
     body: "Get in touch with SAAS Properties to explore our luxury projects and tailored opportunities.",
     formNote:
-      "Leave your details and our team will come back to you within one working day.",
+      "Leave your details and a member of our team will be in touch with you shortly.",
     submitLabel: "Submit",
     privacyNote:
       "By sending this request you agree to our privacy policy. Your details are used only to answer your enquiry.",
@@ -454,7 +454,7 @@ export const PROPERTY: Property = {
   },
 
   gallery: {
-    caption: "(Gallery)",
+    caption: "Gallery",
     heading: "Inside the tower",
     /*
      * Grouped by what is actually in the frame rather than by which folder the

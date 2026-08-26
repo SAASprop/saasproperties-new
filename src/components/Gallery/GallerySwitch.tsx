@@ -66,10 +66,6 @@ export function GallerySwitch({
             )}
 
             <span className="gs-label">{set.label}</span>
-            {/* How many frames are behind the label — the reason to press it. */}
-            <span className="gs-count" aria-hidden="true">
-              {String(set.items.length).padStart(2, '0')}
-            </span>
           </button>
         )
       })}

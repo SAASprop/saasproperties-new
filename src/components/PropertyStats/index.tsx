@@ -151,16 +151,16 @@ export function PropertyStats() {
   return (
     <section
       ref={root}
-      className="bg-bg pb-16 lg:pb-20"
+      className="bg-bg pt-2 pb-16 lg:pb-20"
       aria-label={`${PROPERTY.name} — key figures`}
     >
       {/* Same container as the navbar, hero and Overview. */}
       <div className="mx-auto max-w-[1600px] px-5 md:px-[3.75rem]">
         <dl
           data-anim="stagger-wrap"
-          className="grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-4"
+          className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {stats.map((stat, index) => (
+          {stats.map((stat) => (
             <div
               key={stat.label}
               data-anim="stagger"
@@ -173,15 +173,9 @@ export function PropertyStats() {
                   desktop and as a divider per row on a phone. */}
               <span
                 data-anim="rule"
-                className="mb-7 block h-px w-full origin-left bg-stroke"
+                className="mb-6 block h-px w-full origin-left bg-stroke"
                 aria-hidden="true"
               />
-
-              {/* Ordinal: a quiet piece of structure that gives the eye a count
-                  and stops the labels floating unanchored. */}
-              <span className="mb-5 block font-display text-xs not-italic tabular-nums text-muted">
-                {String(index + 1).padStart(2, "0")}
-              </span>
 
               <dt className="eyebrow">{stat.label}</dt>
 

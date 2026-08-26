@@ -172,7 +172,7 @@ export function Features() {
             <li
               key={item.name}
               data-anim="stagger"
-              className="ft-hide group relative min-h-[9.5rem] overflow-hidden border border-stroke bg-white/[0.05] backdrop-blur-md transition-colors duration-500 hover:border-white/25 hover:bg-white/[0.09] sm:min-h-[11rem] lg:min-h-[8.5rem]"
+              className="ft-hide group relative min-h-[9.5rem] overflow-hidden bg-white/[0.06] ring-1 ring-inset ring-white/10 backdrop-blur-md transition-colors duration-500 hover:bg-white/[0.11] hover:ring-white/25 sm:min-h-[11rem] lg:min-h-[8.5rem]"
             >
               {/* Pinned rather than in the flow, so it cannot shift the centred
                   block off centre. */}

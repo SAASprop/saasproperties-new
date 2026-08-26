@@ -132,9 +132,11 @@ export function Location() {
     >
       <div className="mx-auto max-w-[1600px] px-5 md:px-[3.75rem]">
         <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-14">
-          {/* Map, held on the left and bled to the container edge so the pair
-              reads as a composition rather than as two equal columns. */}
-          <div className="lg:col-span-5 lg:-ml-[3.75rem]">
+          {/* Map, held on the right and bled to the container edge so the pair
+              reads as a composition rather than as two equal columns. It is
+              second in the source but ordered last only on wide screens, so a
+              phone still meets the words before the plan. */}
+          <div className="order-2 lg:col-span-5 lg:col-start-8 lg:-mr-[3.75rem]">
             <div
               ref={mapRef}
               className="loc-map-frame relative aspect-[4/5] overflow-hidden border border-champagne/25 bg-surface sm:aspect-[3/2] lg:h-full lg:min-h-[30rem] lg:aspect-auto"
@@ -200,8 +202,8 @@ export function Location() {
             </div>
           </div>
 
-          {/* Right column: heading, description, then the travel times. */}
-          <div className="lg:col-span-6 lg:col-start-7">
+          {/* Left column: the words, then the travel times. */}
+          <div className="order-1 lg:col-span-6 lg:col-start-1 lg:row-start-1">
             <p data-anim="element" className="loc-hide eyebrow">
               {location.caption}
             </p>
@@ -211,11 +213,15 @@ export function Location() {
             >
               {location.kicker}
             </p>
-            <h2
-              id="location-heading"
-              data-anim="element"
-              className="loc-hide mt-4 font-display text-4xl italic leading-[1.05] text-text sm:text-5xl"
-            >
+            {/* One paragraph, not a heading and a paragraph.
+                The section still needs a heading for anything reading the
+                document outline, but a heading cannot live inside a paragraph —
+                the parser closes the <p> at the <h2> and the two split back
+                apart. So the h2 carries the name for assistive tech only, and
+                the visible lead clause is a span: two pixels up on the body
+                around it and in the page's text colour rather than the muted
+                grey, which is enough to lead without becoming its own block. */}
+            <h2 id="location-heading" className="sr-only">
               {location.heading}
             </h2>
 
@@ -223,6 +229,7 @@ export function Location() {
               data-anim="element"
               className="loc-hide mt-5 text-base leading-relaxed tracking-[0.02em] text-muted"
             >
+              <span className="text-[1.125rem] text-text">{location.heading}.</span>{' '}
               {location.body}
             </p>
 
@@ -256,7 +263,7 @@ export function Location() {
                       {String(highlight.minutes).padStart(2, "0")}
                     </span>
                     <span className="text-[10px] uppercase tracking-[0.25em] text-muted">
-                      min
+                      {highlight.minutes === 1 ? 'min' : 'mins'}
                     </span>
                   </dd>
 

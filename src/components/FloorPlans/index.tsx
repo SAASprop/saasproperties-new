@@ -4,6 +4,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { PROPERTY } from '../../lib/property'
 import { MediaLightbox, type LightboxMedia } from '../MediaLightbox'
+import { DocumentGate, type GatedDocument } from '../DocumentGate'
 import { useMotionDisabled } from '../../lib/motion'
 import './styles.css'
 
@@ -16,6 +17,8 @@ export function FloorPlans() {
   const trackRef = useRef<HTMLDivElement>(null)
   const reducedMotion = useMotionDisabled()
   const [viewerIndex, setViewerIndex] = useState<number | null>(null)
+  /** The document a visitor has asked for, and so the gate to show. */
+  const [gated, setGated] = useState<GatedDocument | null>(null)
 
   useLayoutEffect(() => {
     if (reducedMotion) return
@@ -239,22 +242,22 @@ export function FloorPlans() {
           >
             {floorPlans.downloads.map((doc) =>
               doc.url ? (
-                <a
+                <button
                   key={doc.label}
-                  href={doc.url}
-                  download
-                  className="flex flex-1 items-center justify-center gap-2 border border-champagne/40 whitespace-nowrap px-6 py-4 text-[11px] uppercase tracking-[0.14em] text-text transition-colors duration-300 hover:border-champagne hover:bg-champagne hover:text-bg"
+                  type="button"
+                  onClick={() => setGated({ label: doc.label, url: doc.url as string })}
+                  className="flex flex-1 items-center justify-center gap-2 border border-champagne bg-champagne whitespace-nowrap px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-300 hover:border-white hover:bg-white"
                 >
                   {doc.label}
                   <Download size={14} strokeWidth={1.25} aria-hidden="true" />
-                </a>
+                </button>
               ) : (
                 // No file yet: send the visitor to the enquiry form rather than
                 // hand them a link that would 404.
                 <a
                   key={doc.label}
                   href={`#${PROPERTY.cta.targetId}`}
-                  className="flex flex-1 items-center justify-center gap-2 border border-stroke whitespace-nowrap px-6 py-4 text-[11px] uppercase tracking-[0.14em] text-muted transition-colors duration-300 hover:border-champagne/60 hover:text-text"
+                  className="flex flex-1 items-center justify-center gap-2 border border-champagne/60 whitespace-nowrap px-6 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-text transition-colors duration-300 hover:border-champagne hover:bg-champagne hover:text-bg"
                 >
                   {doc.requestLabel}
                   <ArrowUpRight size={14} strokeWidth={1.25} aria-hidden="true" />
@@ -269,7 +272,9 @@ export function FloorPlans() {
         </div>
       </div>
 
-      {/* Mounts nothing until a sheet is opened. */}
+      {/* Both mount nothing until they are opened. */}
+      <DocumentGate document={gated} onClose={() => setGated(null)} />
+
       <MediaLightbox
         items={viewerItems}
         index={viewerIndex}

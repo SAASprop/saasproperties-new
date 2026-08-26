@@ -82,55 +82,8 @@
   color: var(--ink);
   padding-block: clamp(3.5rem, 5.5vw, 5.5rem);
   overflow: clip;
-  /* Anchors the variant toggle. */
+  /* Anchors the section-level overlays. */
   position: relative;
-}
-
-/* --- Variant toggle ----------------------------------------- */
-
-/* Shared by both galleries. It takes its colour from whichever
-   section it is inside, which is the reason it is rendered within
-   them rather than over them — the two have opposite grounds.
-
-   The right edge follows the page container rather than the
-   viewport, so on a wide monitor it lines up with the heading
-   above it instead of drifting out to the screen edge. Same
-   expression the V1 track used before it became a ring. */
-.g-variant {
-  position: absolute;
-  top: clamp(1.75rem, 4vw, 3.25rem);
-  right: max(1.25rem, calc((100vw - 1600px) / 2 + 1.5rem));
-  z-index: 3;
-
-  padding: 0.5rem 0.65rem;
-  border: 0;
-  background: none;
-  color: currentColor;
-  font-size: 10px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  cursor: pointer;
-
-  /* Present but quiet, until it is looked for. */
-  opacity: 0.25;
-  transition: opacity 400ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.g-variant:hover,
-.g-variant:focus-visible {
-  opacity: 1;
-}
-
-@media (min-width: 768px) {
-  .g-variant {
-    right: max(3rem, calc((100vw - 1600px) / 2 + 3rem));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .g-variant {
-    transition: none;
-  }
 }
 
 /* --- Heading ------------------------------------------------ */
@@ -144,13 +97,10 @@
 }
 
 /* The section label. Matched to .eyebrow in index.css — sized as a
-   signpost, in champagne, with a rule leading into it — but written
-   out here because the ring's stylesheet is standalone and this one
-   is centred, so the rule wants to be on both sides. */
+   signpost, in champagne — but written out here because the ring's
+   stylesheet is standalone. */
 .g-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.85rem;
+  display: inline-block;
   margin: 0;
   font-size: 0.9375rem;
   font-weight: 500;
@@ -158,24 +108,6 @@
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: hsl(var(--champagne));
-}
-
-.g-eyebrow::before,
-.g-eyebrow::after {
-  content: '';
-  display: block;
-  width: 2rem;
-  height: 1px;
-  flex-shrink: 0;
-  background: linear-gradient(
-    to right,
-    hsl(var(--champagne) / 0.1),
-    hsl(var(--champagne) / 0.7)
-  );
-}
-
-.g-eyebrow::after {
-  transform: scaleX(-1);
 }
 
 /* --- Set switch --------------------------------------------- */
@@ -498,7 +430,7 @@
 .g-section {
   --card-w: clamp(240px, 104vw, 420px);
   --radius-card: 14px;
-  --spin: 30s;
+  --spin: 58s;
 }
 
 /* Tablet: five across, the pair at 40deg cut by the frame. */
@@ -506,7 +438,7 @@
   .g-section {
     --card-w: clamp(270px, 35vw, 380px);
     --radius-card: 16px;
-    --spin: 32s;
+    --spin: 62s;
   }
 }
 
@@ -515,7 +447,7 @@
   .g-section {
     --card-w: clamp(320px, 23vw, 540px);
     --radius-card: 20px;
-    --spin: 34s;
+    --spin: 66s;
   }
 }
 
@@ -567,5 +499,78 @@
     .g-card:hover img {
       transform: scale(1.06);
     }
+  }
+}
+
+/* --- Media-kind plate --------------------------------------- */
+
+/* Says whether a card is a still or the reel, in the corner opposite
+   the hover label. Sized off --cue-size like the label, because the
+   card sits inside a perspective that shrinks whatever is drawn in
+   it and only the section knows by how much. */
+.g-kind {
+  position: absolute;
+  top: var(--cue-pad);
+  right: var(--cue-pad);
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--cue-size) * 0.55);
+  padding: calc(var(--cue-size) * 0.5) calc(var(--cue-size) * 0.85);
+  pointer-events: none;
+
+  font-size: calc(var(--cue-size) * 0.92);
+  line-height: 1;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--ivory);
+
+  /* Its own ground, because it sits over photography that could be
+     any brightness. Blur rather than a solid fill so it reads as
+     glass on the frame. */
+  background-color: rgb(10 9 7 / 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  border-radius: 999px;
+
+  opacity: 0;
+  transform: translateY(calc(var(--cue-size) * -0.6));
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1) 40ms,
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1) 40ms;
+}
+
+.g-kind-icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+@media (hover: hover) {
+  .g-card:hover .g-kind {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.g-card:focus-visible .g-kind {
+  opacity: 1;
+  transform: none;
+}
+
+/* No hover on a touch screen, so the plate is simply always on: it is
+   the only thing that distinguishes the reel from the stills. */
+@media (hover: none) {
+  .g-kind {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-kind {
+    transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform: none;
   }
 }

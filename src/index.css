@@ -8,8 +8,8 @@
     --bg: 0 0% 4%;
     --surface: 0 0% 8%;
     --text: 0 0% 96%;
-    --muted: 0 0% 53%;
-    --stroke: 0 0% 12%;
+    --muted: 0 0% 64%;
+    --stroke: 0 0% 26%;
     --accent: 0 0% 96%;
 
     /* Muted champagne, for markers and hairlines that need to read as warm
@@ -119,14 +119,7 @@
    * as one object wherever the parent is centred.
    */
   .eyebrow {
-    @apply inline-flex items-center gap-3.5 text-[0.9375rem] font-medium uppercase leading-none tracking-[0.22em] text-champagne;
-  }
-
-  .eyebrow::before {
-    content: '';
-    /* Drawn from the champagne to nothing, so it reads as leading into the
-       word rather than as a bar stuck to it. */
-    @apply block h-px w-8 shrink-0 bg-gradient-to-r from-champagne/70 to-champagne/10;
+    @apply inline-block text-[0.9375rem] font-medium uppercase leading-none tracking-[0.22em] text-champagne;
   }
 
   /**

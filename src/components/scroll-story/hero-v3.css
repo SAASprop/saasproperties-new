@@ -21,7 +21,10 @@
   --v3-font-body: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   --v3-rule: rgb(255 255 255 / 0.2);
-  --v3-dim: rgb(255 255 255 / 0.7);
+  /* 0.7 measured 3.3:1 against the reel behind it, which fails AA for the
+     12px scroll cue and the 16px standfirst that both read from it. 0.9 clears
+     it with room for the brighter frames in the cut. */
+  --v3-dim: rgb(255 255 255 / 0.9);
 
   position: relative;
   /* svh, not vh: mobile browser chrome otherwise pushes the bottom-anchored
@@ -251,15 +254,80 @@
   font-size: 0.75rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--v3-dim);
+  /* Full white rather than --v3-dim. At 12px, tracked this wide, there is very
+     little solid glyph for the eye to work with, and a translucent white over
+     the reel measured under AA. The cue is the smallest text in the hero, so it
+     gets the strongest colour in it. */
+  color: #fff;
 }
 
-.hero-v3__scroll::after {
-  content: '';
+/* The rail the cue travels along. The static gradient it replaces was the
+   whole hint; now the fall-off is the rail and the moving part is inside it. */
+.hero-v3__scroll-rail {
+  position: relative;
   display: block;
   width: 3rem;
   height: 1px;
+  overflow: hidden;
   background: linear-gradient(to right, var(--v3-rule), transparent);
+}
+
+/* A short bright segment that runs the length of the rail and repeats, so the
+   line reads as pointing somewhere rather than merely stopping. */
+.hero-v3__scroll-glint {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    hsl(var(--champagne) / 0.95),
+    transparent
+  );
+  animation: v3-scroll-glint 2.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes v3-scroll-glint {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  /* Holds at full strength across the middle of the run, so the eye has
+     something to follow rather than a flicker at each end. */
+  25%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(222%);
+    opacity: 0;
+  }
+}
+
+/* Taken. The cue has done its job, so it stops moving and the whole hint
+   settles back to being a label. */
+.hero-v3__scroll[data-taken='true'] .hero-v3__scroll-glint {
+  animation: none;
+  opacity: 0;
+}
+
+.hero-v3__scroll {
+  transition: opacity 600ms ease-out;
+}
+
+.hero-v3__scroll[data-taken='true'] {
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-v3__scroll-glint {
+    animation: none;
+    /* Left as a static highlight on the rail, so the emphasis survives even
+       though the movement does not. */
+    opacity: 0.7;
+    transform: translateX(60%);
+  }
 }
 
 /* --- Meta row above the title --- */

@@ -43,8 +43,29 @@ export function CardFace({
           does — this is the visual echo of it, so it stays out of the a11y
           tree. */}
       <span className="g-veil" aria-hidden="true" />
+
+      {/* The kind of thing behind the card, named and drawn. A still and a reel
+          are the same rectangle until one is opened, and finding out by clicking
+          is the wrong way round — so the mark sits in the corner opposite the
+          label, where it reads as a plate on the frame rather than a control. */}
+      <span className="g-kind" aria-hidden="true">
+        {item.kind === 'video' ? (
+          <svg className="g-kind-icon" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6.6" stroke="currentColor" strokeWidth="1.1" />
+            <path d="M6.6 5.5 11 8l-4.4 2.5z" fill="currentColor" />
+          </svg>
+        ) : (
+          <svg className="g-kind-icon" viewBox="0 0 16 16" fill="none">
+            <rect x="1.9" y="3.4" width="12.2" height="9.2" rx="1.4" stroke="currentColor" strokeWidth="1.1" />
+            <circle cx="5.9" cy="6.7" r="1.05" stroke="currentColor" strokeWidth="1.1" />
+            <path d="m3.1 11.6 3.2-3 2.2 2 2-1.7 2.4 2.2" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+          </svg>
+        )}
+        <span>{item.kind === 'video' ? 'Film' : 'Photo'}</span>
+      </span>
+
       <span className="g-cue" aria-hidden="true">
-        <span>View full image</span>
+        <span>{item.kind === 'video' ? 'Play film' : 'View full image'}</span>
         <svg className="g-cue-icon" viewBox="0 0 16 16" fill="none">
           <path
             d="M6 1.75H1.75V6M10 1.75H14.25V6M10 14.25H14.25V10M6 14.25H1.75V10"

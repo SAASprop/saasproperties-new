@@ -77,24 +77,11 @@
   font-weight: 500;
 }
 
-/* The frame count, set smaller and lighter — a note on the label, not part of
-   it. Dropped on a phone, where the row needs the width more than the detail. */
-.gs-count {
-  font-size: 0.5625rem;
-  letter-spacing: 0.12em;
-  opacity: 0.55;
-  font-variant-numeric: tabular-nums;
-}
-
 @media (max-width: 480px) {
   .gs-opt {
     padding: 0.55rem 0.85rem;
     font-size: 0.625rem;
     letter-spacing: 0.16em;
-  }
-
-  .gs-count {
-    display: none;
   }
 }
 

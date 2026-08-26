@@ -1,23 +1,14 @@
-import { Route, Routes } from 'react-router-dom'
 import Index from './pages/Index'
-import DesignV2 from './pages/DesignV2'
-import Design2 from './pages/Design2'
 
+/**
+ * One property, one page.
+ *
+ * There were three routes here — the live page plus two alternative art
+ * directions kept for comparison — and with those retired there is nothing left
+ * to route between. The router went with them rather than being left in place
+ * around a single element: a BrowserRouter that resolves one component is
+ * indirection with nothing on the other side of it.
+ */
 export default function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Index />} />
-      {/* Alternative art directions for the same property, to be compared
-          against "/". Each shares the data and the functional components and
-          none of the layout; the production route above is untouched. Both are
-          declared before the catch-all, which would otherwise swallow them.
-
-          /design    editorial — asymmetric, oversized uppercase type
-          /design-2  kinetic — small refined wordmark, scroll-driven throughout */}
-      <Route path="/design" element={<DesignV2 />} />
-      <Route path="/design-2" element={<Design2 />} />
-      {/* Any deep link on the Pages deployment falls back to the single page. */}
-      <Route path="*" element={<Index />} />
-    </Routes>
-  )
+  return <Index />
 }

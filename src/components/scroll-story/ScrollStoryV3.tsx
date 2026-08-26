@@ -53,6 +53,23 @@ export function ScrollStoryV3() {
         .to('[data-hero="scroll"]', { opacity: 1, y: 0, duration: 0.9 }, 1.8)
         .to('[data-hero="meta"]', { opacity: 1, y: 0, duration: 0.9 }, 1.6)
 
+      // The cue is an instruction, so it stops once it has been followed.
+      // A toggled attribute rather than a tween: the sweep is a CSS animation
+      // and this only has to tell it to stand down, which also means the state
+      // survives a reduced-motion revert without GSAP holding the value.
+      ScrollTrigger.create({
+        trigger: root.current,
+        start: 'top+=80 top',
+        onEnter: () =>
+          root.current
+            ?.querySelector('[data-hero="scroll"]')
+            ?.setAttribute('data-taken', 'true'),
+        onLeaveBack: () =>
+          root.current
+            ?.querySelector('[data-hero="scroll"]')
+            ?.removeAttribute('data-taken'),
+      })
+
       // Scroll parallax. Values are written with gsap.set rather than a
       // zero-duration gsap.to, which would allocate a throwaway tween on every
       // scroll frame.
@@ -138,6 +155,13 @@ export function ScrollStoryV3() {
             </div>
             <div data-hero="scroll" className="hero-v3__scroll">
               {PROPERTY.scrollHint}
+              {/* The travelling rule, which is the part that reads as an
+                  instruction. Its own element rather than a pseudo on the
+                  parent, so the sweep can be clipped to it without also
+                  clipping the words. */}
+              <span className="hero-v3__scroll-rail" aria-hidden="true">
+                <span className="hero-v3__scroll-glint" />
+              </span>
             </div>
           </div>
         </div>

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import gsap from "gsap";
-import { useLocation } from "react-router-dom";
 import { BRAND, ENQUIRE, NAV_LINKS } from "../lib/content";
 import { PROPERTY } from "../lib/property";
 import { SaasLogo } from "./SaasLogo";
@@ -11,7 +10,6 @@ export function Navbar() {
   const [activeId, setActiveId] = useState<string>(NAV_LINKS[0].id);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { search } = useLocation();
   const reducedMotion = useMotionDisabled();
 
   /** The pill, and the pool of light that travels inside it. */
@@ -82,12 +80,6 @@ export function Navbar() {
   // Contact is observed alongside the listed links so it highlights the same
   // way, even though it is not part of NAV_LINKS.
   //
-  // Re-resolved whenever the query string changes, because the page's variants
-  // are selected from it: switching gallery design unmounts the old #gallery and
-  // mounts a different element under the same id. Elements are held by the
-  // observer, not looked up per callback, so without this it would go on
-  // watching a node that is no longer in the document and that entry would
-  // never light up again.
   useEffect(() => {
     const sections = [...NAV_LINKS.map(({ id }) => id), ENQUIRE.targetId]
       .map((id) => document.getElementById(id))
@@ -106,7 +98,7 @@ export function Navbar() {
 
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, [search]);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 100);
@@ -132,6 +124,12 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [menuOpen]);
 
+  /** Both marks return to the hero, which is the top of the page. */
+  const toHero = () => {
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+  };
+
   const scrollTo = (id: string) => {
     setMenuOpen(false);
     document
@@ -155,50 +153,47 @@ export function Navbar() {
             page shell, then the hero's 1.25rem/3.75rem gutters. Without this the
             header spans the full viewport and the logo sits left of the display
             type it should line up with. */}
-        <nav className="relative mx-auto flex max-w-[1600px] items-center gap-4 px-5 md:justify-center md:px-[3.75rem]">
-          {/* Logo sits outside the pill on desktop, hidden on mobile. Taken out
-              of the flow so the pill can centre against the full container: it
-              used to be balanced by a matching invisible logo on the right,
-              which meant a second copy of the mark sat beside Contact. */}
-          <button
-            type="button"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="absolute left-5 top-1/2 hidden shrink-0 -translate-y-1/2 items-center md:left-[3.75rem] md:flex"
-            aria-label={`${scrolled ? PROPERTY.name : BRAND.name} — back to top`}
-          >
-            {/* The two marks are stacked and cross-faded rather than swapped, so
-                the change reads as one gesture. Both are absolute inside a box of
-                a fixed height, so neither can nudge the other as they trade
-                places, and only opacity and transform animate. */}
-            <span className="relative block h-10 w-[8.5rem]">
-              <SaasLogo
-                className={`absolute left-0 top-1/2 h-10 w-auto -translate-y-1/2 text-text transition-[opacity,transform] duration-500 ease-out ${
-                  scrolled ? "-translate-y-[calc(50%+0.5rem)] opacity-0" : "opacity-100"
-                }`}
-                aria-hidden="true"
-              />
+        <nav className="relative mx-auto flex max-w-[1600px] items-center justify-between gap-4 px-5 md:px-[3.75rem]">
+          {/* Left: the hamburger on a phone, then the house mark. The two sit
+              together so the corner reads as one control group rather than a
+              button marooned beside a logo. */}
+          <div className="flex shrink-0 items-center gap-3 md:gap-0">
+            <button
+              type="button"
+              onClick={() => setMenuOpen((open) => !open)}
+              className="grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-surface/80 backdrop-blur-xl md:hidden"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+            >
+              <span className="relative block h-3 w-4">
+                <span
+                  className={`absolute left-0 block h-[1px] w-full bg-text transition-transform duration-300 ${
+                    menuOpen ? "top-1/2 rotate-45" : "top-0"
+                  }`}
+                />
+                <span
+                  className={`absolute left-0 block h-[1px] w-full bg-text transition-transform duration-300 ${
+                    menuOpen ? "top-1/2 -rotate-45" : "top-full"
+                  }`}
+                />
+              </span>
+            </button>
 
-              {/* The supplied mark is already white on transparency, so it needs
-                  no recolouring. Eager, not lazy: it is above the fold and a
-                  lazy fetch would show a gap on the first scroll. */}
-              <img
-                src={PROPERTY.logo}
-                alt=""
-                aria-hidden="true"
-                width={896}
-                height={164}
-                className={`absolute left-0 top-1/2 h-6 w-auto -translate-y-1/2 transition-[opacity,transform] duration-500 ease-out ${
-                  scrolled ? "opacity-100" : "translate-y-[calc(-50%+0.5rem)] opacity-0"
-                }`}
-              />
-            </span>
-          </button>
+            <button
+              type="button"
+              onClick={toHero}
+              className="flex shrink-0 items-center"
+              aria-label={`${BRAND.name} — back to the top`}
+            >
+              <SaasLogo className="h-7 w-auto text-text sm:h-9 md:h-10" aria-hidden="true" />
+            </button>
+          </div>
 
           <div
             ref={pillRef}
             onPointerMove={onPillMove}
             onPointerLeave={onPillLeave}
-            className={`relative isolate hidden items-center gap-1 overflow-hidden rounded-full border px-2 py-2 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 ease-out md:flex ${
+            className={`relative isolate hidden shrink-0 items-center gap-1 overflow-hidden rounded-full border px-2 py-2 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 ease-out md:flex ${
               scrolled
                 ? "border-white/15 bg-surface/90 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.9)]"
                 : "border-stroke bg-surface/70 shadow-none"
@@ -239,25 +234,26 @@ export function Navbar() {
             </button>
           </div>
 
+          {/* Right: the property's own mark, at both sizes. It is the far edge
+              of the bar on desktop too — past the links rather than beside
+              them — so the two marks bookend the row. */}
           <button
             type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            className="ml-auto grid h-11 w-11 place-items-center rounded-full border border-stroke bg-surface/70 backdrop-blur-xl md:hidden"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
+            onClick={toHero}
+            className="flex shrink-0 items-center"
+            aria-label={`${PROPERTY.name} — back to the top`}
           >
-            <span className="relative block h-3 w-4">
-              <span
-                className={`absolute left-0 block h-[1px] w-full bg-text transition-transform duration-300 ${
-                  menuOpen ? "top-1/2 rotate-45" : "top-0"
-                }`}
-              />
-              <span
-                className={`absolute left-0 block h-[1px] w-full bg-text transition-transform duration-300 ${
-                  menuOpen ? "top-1/2 -rotate-45" : "top-full"
-                }`}
-              />
-            </span>
+            {/* Already white on transparency, so it needs no recolouring. Eager,
+                not lazy: it is above the fold and a lazy fetch would leave a gap
+                on first paint. */}
+            <img
+              src={PROPERTY.logo}
+              alt=""
+              aria-hidden="true"
+              width={896}
+              height={164}
+              className="h-5 w-auto sm:h-6"
+            />
           </button>
         </nav>
       </header>
@@ -271,10 +267,6 @@ export function Navbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            {/* Clipped to the pill by its overflow, so the light never spills
-                onto the page either side of the bar. */}
-            <span ref={lumeRef} className="nav-lume" aria-hidden="true" />
-
             {NAV_LINKS.map((link) => (
               <button
                 key={link.id}

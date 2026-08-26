@@ -117,7 +117,7 @@ export function Overview() {
     <section
       id="overview"
       ref={root}
-      className="bg-bg py-24 md:py-32 lg:py-40"
+      className="bg-bg pb-10 pt-24 md:pb-12 md:pt-32 lg:pb-14 lg:pt-40"
       aria-label="Overview"
     >
       {/* Same container as the navbar and the hero, so every left edge lines up. */}

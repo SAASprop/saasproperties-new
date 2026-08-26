@@ -21,6 +21,13 @@ export const BRAND = {
     { label: "YouTube", href: "https://youtube.com", icon: "youtube" },
     { label: "TikTok", href: "https://tiktok.com", icon: "tiktok" },
   ],
+  // TODO(copy): placeholder number — swap in the real sales line. Both entries
+  // read from this, so it only has to be changed once.
+  phone: {
+    display: "+971 2 123 4567",
+    // E.164, digits only after the +, which is what tel: and wa.me both want.
+    e164: "97121234567",
+  },
 } as const;
 
 /**
@@ -59,7 +66,7 @@ export const NAV_LINKS = [
   { label: "Overview", id: "overview" },
   { label: "Features", id: "features" },
   { label: "Gallery", id: "gallery" },
-  { label: "Floor Plan", id: "floor-plan" },
+  { label: "Floor Plans", id: "floor-plan" },
   { label: "Location", id: "location" },
 ] as const;
 
@@ -87,6 +94,6 @@ export const FOOTER = {
 } as const;
 
 export const ENQUIRE = {
-  label: "Contact",
+  label: "Contact Us",
   targetId: "contact",
 } as const;

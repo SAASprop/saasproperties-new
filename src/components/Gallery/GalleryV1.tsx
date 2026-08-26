@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PROPERTY } from "../../lib/property";
 import { MediaLightbox, type OpenOrigin } from "../MediaLightbox";
-import type { GalleryVariantId } from "../../hooks/useGalleryVariant";
 import { CardFace } from "./CardFace";
-import { VariantToggle } from "./VariantToggle";
 import { GallerySwitch } from "./GallerySwitch";
 import { useGallerySets } from "../../hooks/useGallerySets";
 import { originOf } from "./origin";
@@ -32,13 +30,7 @@ const { gallery } = PROPERTY;
 const SLOTS = 18;
 
 /** The concave gallery wall: a cylinder seen from the inside. */
-export function GalleryV1({
-  variant,
-  onSelectVariant,
-}: {
-  variant: GalleryVariantId;
-  onSelectVariant: (id: GalleryVariantId) => void;
-}) {
+export function GalleryV1() {
   const stageRef = useRef<HTMLDivElement>(null);
 
   /** Which item the viewer is on and the card it grew out of, or null. */
@@ -96,8 +88,6 @@ export function GalleryV1({
           className="g-switch"
         />
       </div>
-
-      <VariantToggle current={variant} onSelect={onSelectVariant} />
 
       <div className="g-stage" ref={stageRef}>
         {/* Keyed on the set so switching restarts the ring from its first frame

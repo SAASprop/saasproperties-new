@@ -8,9 +8,28 @@ import type { ReactNode } from 'react'
  * Drawn as thin-line outlines to sit with the rest of the icon set, rather than
  * pulling in a brand-icon package for five shapes.
  */
-export type SocialIcon = 'instagram' | 'linkedin' | 'facebook' | 'youtube' | 'tiktok'
+export type SocialIcon =
+  | 'instagram'
+  | 'linkedin'
+  | 'facebook'
+  | 'youtube'
+  | 'tiktok'
+  // Not accounts, but they sit in the same row and want the same drawing style.
+  | 'phone'
+  | 'whatsapp'
 
 const PATHS: Record<SocialIcon, ReactNode> = {
+  phone: (
+    <path d="M6.3 3.4h2.1l1.1 2.8-1.5 1.1a8.4 8.4 0 0 0 4.7 4.7l1.1-1.5 2.8 1.1v2.1a1.9 1.9 0 0 1-2.1 1.9A11.6 11.6 0 0 1 4.4 5.5 1.9 1.9 0 0 1 6.3 3.4z" />
+  ),
+  whatsapp: (
+    <>
+      {/* The speech bubble with the tail at the lower left, which is what makes
+          the mark read as WhatsApp rather than as a generic chat icon. */}
+      <path d="M12 3.6a8.4 8.4 0 0 1 6.9 13.2l.8 3.2-3.3-.9A8.4 8.4 0 1 1 12 3.6z" />
+      <path d="M9.3 8.2c.4 1.9 1.4 3.3 2.8 4.3.9.6 1.9 1 2.6 1.1" />
+    </>
+  ),
   instagram: (
     <>
       <rect x="3.5" y="3.5" width="17" height="17" rx="4.75" />

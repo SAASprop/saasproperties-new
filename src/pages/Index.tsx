@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { LoadingScreen } from '../components/LoadingScreen'
 import { Navbar } from '../components/Navbar'
-import { ScrollStory, StoryVariantSwitcher } from '../components/scroll-story'
+import { ScrollStory } from '../components/scroll-story'
 import { RevealProvider } from '../components/RevealProvider'
 import { MotionProvider } from '../components/MotionProvider'
 import { Overview } from '../components/Overview'
@@ -58,9 +58,6 @@ export default function Index() {
         <Contact />
         <ContactFooter />
       </motion.main>
-
-      {/* Demo-only; renders nothing on a bare deployed link. */}
-      <StoryVariantSwitcher />
 
     </MotionProvider>
   )

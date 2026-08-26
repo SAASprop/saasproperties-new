@@ -94,6 +94,39 @@ function mailtoFor(values: Values, dial: string) {
   )}&body=${encodeURIComponent(body)}`
 }
 
+/**
+ * Everything in the "reach us" row, in the order it is shown.
+ *
+ * The phone and WhatsApp are derived from the one number in BRAND, so the two
+ * can never drift apart, and both are labelled with the number itself — a
+ * screen reader announcing "WhatsApp" alone does not say who it reaches.
+ */
+const CONTACT_CHANNELS = [
+  {
+    label: `Call ${BRAND.phone.display}`,
+    aria: `Call ${BRAND.name} on ${BRAND.phone.display}`,
+    href: `tel:+${BRAND.phone.e164}`,
+    icon: 'phone' as const,
+    newTab: false,
+  },
+  {
+    label: 'WhatsApp',
+    aria: `Message ${BRAND.name} on WhatsApp`,
+    // wa.me is the documented click-to-chat form; it hands off to the app when
+    // one is installed and to web.whatsapp.com when it is not.
+    href: `https://wa.me/${BRAND.phone.e164}`,
+    icon: 'whatsapp' as const,
+    newTab: true,
+  },
+  ...BRAND.socials.map((social) => ({
+    label: social.label,
+    aria: `${BRAND.name} on ${social.label}`,
+    href: social.href,
+    icon: social.icon,
+    newTab: true,
+  })),
+]
+
 export function Contact() {
   const root = useRef<HTMLElement>(null)
   const reducedMotion = useMotionDisabled()
@@ -296,22 +329,27 @@ export function Contact() {
               </p>
             </div>
 
-            {/* Social accounts. */}
+            {/* Ways to reach us: the phone and WhatsApp first, since those two
+                reach a person now, then the accounts. One row, so the choice
+                reads as a choice rather than as two unrelated groups. */}
             <ul
               data-anim="element"
               className="ct-hide mt-9 flex list-none flex-wrap gap-3 p-0"
             >
-              {BRAND.socials.map((social) => (
-                <li key={social.label}>
+              {CONTACT_CHANNELS.map((channel) => (
+                <li key={channel.label}>
                   <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${BRAND.name} on ${social.label}`}
-                    title={social.label}
-                    className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-text/80 transition-colors duration-300 hover:border-champagne hover:bg-champagne hover:text-bg"
+                    href={channel.href}
+                    // A tel: link must stay in place — opening it in a new tab
+                    // leaves an empty window behind on desktop.
+                    {...(channel.newTab
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                    aria-label={channel.aria}
+                    title={channel.label}
+                    className="grid h-11 w-11 place-items-center rounded-full border border-white/35 text-text transition-colors duration-300 hover:border-champagne hover:bg-champagne hover:text-bg"
                   >
-                    <SocialGlyph icon={social.icon} className="h-[18px] w-[18px]" />
+                    <SocialGlyph icon={channel.icon} className="h-[18px] w-[18px]" />
                   </a>
                 </li>
               ))}
@@ -473,7 +511,7 @@ export function Contact() {
                   <button
                     type="submit"
                     disabled={status === 'sending'}
-                    className="mt-10 w-full border border-champagne/40 bg-transparent py-4 text-[11px] uppercase tracking-[0.25em] text-text transition-colors duration-300 hover:border-champagne hover:bg-champagne hover:text-bg disabled:cursor-default disabled:opacity-60"
+                    className="mt-10 w-full border border-champagne bg-champagne py-4 text-[11px] font-semibold uppercase tracking-[0.25em] text-bg transition-colors duration-300 hover:border-white hover:bg-white disabled:cursor-default disabled:opacity-70"
                   >
                     {status === 'sending' ? 'Sending…' : contact.submitLabel}
                   </button>
