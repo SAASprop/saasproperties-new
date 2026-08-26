@@ -355,10 +355,8 @@ export const PROPERTY: Property = {
     // fold on a laptop.
     body: "Set off the coast of Abu Dhabi, Reem Island pairs high-rise living with lush green space and the pristine beaches of the Arabian Gulf — premium schools, shopping and dining all minutes from the door.",
     mapEmbedUrl:
-      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3630.4835865746802!2d54.40884007606291!3d24.503343678164107!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5e67003214be69%3A0xed5674879ad80be2!2sReem%20Eleven!5e0!3m2!1sen!2sae!4v1756272761966!5m2!1sen!2sae",
-    // Read off the embed's own centre point, so the plate and the map agree.
-    mapLinkUrl:
-      "https://www.google.com/maps/search/?api=1&query=24.5033%2C54.4088",
+      "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3630.483585944037!2d54.411415!3d24.5033437!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5e67001f493969%3A0x6cae596a541e83d!2sReem%20Eleven!5e0!3m2!1sen!2sae!4v1787739994583!5m2!1sen!2sae",
+    mapLinkUrl: "https://maps.app.goo.gl/dFatwnmyHQSMvTvv7",
     coordinates: "24.5033° N, 54.4088° E",
     highlights: [
       { label: "Health & Wellness Centers", minutes: 5, icon: "wellness" },
@@ -550,7 +548,8 @@ export const PROPERTY: Property = {
           },
         ],
       },
-    ],  },
+    ],
+  },
 };
 
 /**

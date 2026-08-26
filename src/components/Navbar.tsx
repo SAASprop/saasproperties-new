@@ -157,11 +157,11 @@ export function Navbar() {
           {/* Left: the hamburger on a phone, then the house mark. The two sit
               together so the corner reads as one control group rather than a
               button marooned beside a logo. */}
-          <div className="flex shrink-0 items-center gap-3 md:gap-0">
+          <div className="flex shrink-0 items-center gap-3 lg:gap-0">
             <button
               type="button"
               onClick={() => setMenuOpen((open) => !open)}
-              className="grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-surface/80 backdrop-blur-xl md:hidden"
+              className="grid h-11 w-11 place-items-center rounded-full border border-white/25 bg-surface/80 backdrop-blur-xl lg:hidden"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
             >
@@ -193,7 +193,7 @@ export function Navbar() {
             ref={pillRef}
             onPointerMove={onPillMove}
             onPointerLeave={onPillLeave}
-            className={`relative isolate hidden shrink-0 items-center gap-1 overflow-hidden rounded-full border px-2 py-2 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 ease-out md:flex ${
+            className={`relative isolate hidden shrink-0 items-center gap-1 overflow-hidden rounded-full border px-2 py-2 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 ease-out lg:flex ${
               scrolled
                 ? "border-white/15 bg-surface/90 shadow-[0_10px_40px_-12px_rgba(0,0,0,0.9)]"
                 : "border-stroke bg-surface/70 shadow-none"
@@ -261,31 +261,40 @@ export function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="fixed inset-0 z-40 flex flex-col justify-center gap-2 bg-bg px-6 md:hidden"
+            // The scroll container. Centring and overflow cannot both live on
+            // one element: a centred flex child that outgrows its parent is
+            // pushed off the top and cannot be scrolled back to. So this one
+            // only scrolls, and the list inside it does the centring.
+            className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-bg lg:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            {NAV_LINKS.map((link) => (
-              <button
-                key={link.id}
-                type="button"
-                onClick={() => scrollTo(link.id)}
-                className="py-2 text-left font-display text-4xl italic text-text"
-              >
-                {link.label}
-              </button>
-            ))}
-            {/* Set as one more link rather than a pill: in the overlay the
-                button read as a different kind of control to the items above it. */}
-            <button
-              type="button"
-              onClick={() => scrollTo(ENQUIRE.targetId)}
-              className="py-2 text-left font-display text-4xl italic text-text"
-            >
-              {ENQUIRE.label}
-            </button>
+            {/* min-h-full with justify-center centres the list when there is
+                room and lets it grow and scroll when there is not — which is
+                the case on any landscape phone. The top padding clears the bar,
+                so the first link can never sit under the X that closes it.
+
+                Same gutters as the nav itself: the links start on exactly the
+                vertical of the button that opened them. */}
+            <div className="flex min-h-full flex-col justify-center gap-1 px-5 pb-12 pt-28 md:px-[3.75rem]">
+              {[...NAV_LINKS, { id: ENQUIRE.targetId, label: ENQUIRE.label }].map(
+                (link) => (
+                  <button
+                    key={link.id}
+                    type="button"
+                    onClick={() => scrollTo(link.id)}
+                    // Sized against the viewport's height rather than a
+                    // breakpoint: what runs out on a short screen is vertical
+                    // room, and no width-based step can see that.
+                    className="py-2 text-left font-display text-[clamp(1.75rem,6.5vh,2.25rem)] italic leading-tight text-text"
+                  >
+                    {link.label}
+                  </button>
+                ),
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

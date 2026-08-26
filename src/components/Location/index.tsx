@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PROPERTY } from "../../lib/property";
 import { FeatureGlyph } from "../FeatureGlyph";
 import { useMotionDisabled } from "../../lib/motion";
-import './styles.css';
+import "./styles.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -139,7 +139,7 @@ export function Location() {
           <div className="order-2 lg:col-span-5 lg:col-start-8 lg:-mr-[3.75rem]">
             <div
               ref={mapRef}
-              className="loc-map-frame relative aspect-[4/5] overflow-hidden border border-champagne/25 bg-surface sm:aspect-[3/2] lg:h-full lg:min-h-[30rem] lg:aspect-auto"
+              className="relative aspect-[4/5] overflow-hidden border border-champagne/25 bg-surface sm:aspect-[3/2] lg:h-full lg:min-h-[30rem] lg:aspect-auto"
             >
               {mapMounted && (
                 <iframe
@@ -168,7 +168,8 @@ export function Location() {
                 className="loc-map-open group absolute inset-0 z-10 block focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-[-2px] focus-visible:outline-champagne"
               >
                 <span className="sr-only">
-                  Open the location of {PROPERTY.name} in Google Maps, in a new tab
+                  Open the location of {PROPERTY.name} in Google Maps, in a new
+                  tab
                 </span>
 
                 {/* The affordance. Quiet until the frame is hovered, so the map
@@ -229,14 +230,16 @@ export function Location() {
               data-anim="element"
               className="loc-hide mt-5 text-base leading-relaxed tracking-[0.02em] text-muted"
             >
-              <span className="text-[1.125rem] text-text">{location.heading}.</span>{' '}
+              <span className="text-[1.125rem] text-text">
+                {location.heading}.
+              </span>{" "}
               {location.body}
             </p>
 
             {/* Travel times. Two up, since this column is half the page — the
                 figure still carries the block. */}
-            <dl className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 lg:mt-12 lg:gap-x-8">
-              {location.highlights.map((highlight, index) => (
+            <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:mt-10 lg:gap-x-8">
+              {location.highlights.map((highlight) => (
                 <div
                   key={highlight.label}
                   data-anim="highlight"
@@ -248,26 +251,26 @@ export function Location() {
                     className="block h-px w-full origin-left bg-stroke transition-colors duration-500 group-hover:bg-champagne/50"
                   />
 
-                  <span className="mt-3 flex items-center justify-between gap-2">
-                    <span className="font-display text-[10px] not-italic tabular-nums text-muted">
-                      ( {String(index + 1).padStart(2, "0")} )
-                    </span>
+                  {/* Minutes + icon */}
+                  <div className="mt-3 flex min-h-[2.25rem] items-center justify-between gap-3">
+                    <dd className="m-0 flex items-baseline gap-1.5">
+                      <span className="font-display text-[clamp(1.6rem,2.1vw,2.1rem)] not-italic leading-none tracking-[-0.02em] text-text">
+                        {String(highlight.minutes).padStart(2, "0")}
+                      </span>
+
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-muted">
+                        {highlight.minutes === 1 ? "min" : "mins"}
+                      </span>
+                    </dd>
+
                     <FeatureGlyph
                       icon={highlight.icon}
                       className="h-5 w-5 shrink-0 text-champagne transition-transform duration-500 group-hover:-translate-y-0.5"
                     />
-                  </span>
+                  </div>
 
-                  <dd className="m-0 mt-3 flex items-baseline gap-1.5">
-                    <span className="font-display text-[clamp(1.75rem,2.3vw,2.375rem)] not-italic leading-none tracking-[-0.02em] text-text">
-                      {String(highlight.minutes).padStart(2, "0")}
-                    </span>
-                    <span className="text-[10px] uppercase tracking-[0.25em] text-muted">
-                      {highlight.minutes === 1 ? 'min' : 'mins'}
-                    </span>
-                  </dd>
-
-                  <dt className="mt-2.5 text-[11px] uppercase leading-relaxed tracking-[0.14em] text-muted">
+                  {/* Location */}
+                  <dt className="mt-2 min-h-[2.5rem] text-[10px] uppercase leading-[1.25rem] tracking-[0.12em] text-muted">
                     {highlight.label}
                   </dt>
                 </div>

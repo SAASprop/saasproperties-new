@@ -1,4 +1,4 @@
-import type { LightboxMedia } from '../MediaLightbox'
+import type { LightboxMedia } from "../MediaLightbox";
 
 /**
  * The inside of a gallery card: the still, the veil and the hover cue.
@@ -18,8 +18,8 @@ export function CardFace({
   /** A repeated slot: already announced elsewhere on the ring, so silent here. */
   decorative = false,
 }: {
-  item: LightboxMedia
-  decorative?: boolean
+  item: LightboxMedia;
+  decorative?: boolean;
 }) {
   return (
     <>
@@ -27,8 +27,8 @@ export function CardFace({
           second <video> here would refetch all 29 MB of it for a card this
           size. It plays at full size in the viewer instead. */}
       <img
-        src={item.kind === 'video' ? item.poster : item.src}
-        alt={decorative ? '' : item.alt}
+        src={item.kind === "video" ? item.poster : item.src}
+        alt={decorative ? "" : item.alt}
         // Both galleries repeat the same handful of files across their slots, so
         // this is six requests however many cards there are. Deferring them
         // keeps the section off the critical path on the way down the page.
@@ -48,25 +48,54 @@ export function CardFace({
           are the same rectangle until one is opened, and finding out by clicking
           is the wrong way round — so the mark sits in the corner opposite the
           label, where it reads as a plate on the frame rather than a control. */}
-      <span className="g-kind" aria-hidden="true">
-        {item.kind === 'video' ? (
+      <span className="g-kind text-white" aria-hidden="true">
+        {item.kind === "video" ? (
           <svg className="g-kind-icon" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="6.6" stroke="currentColor" strokeWidth="1.1" />
+            <circle
+              cx="8"
+              cy="8"
+              r="6.6"
+              stroke="currentColor"
+              strokeWidth="1.1"
+            />
             <path d="M6.6 5.5 11 8l-4.4 2.5z" fill="currentColor" />
           </svg>
         ) : (
           <svg className="g-kind-icon" viewBox="0 0 16 16" fill="none">
-            <rect x="1.9" y="3.4" width="12.2" height="9.2" rx="1.4" stroke="currentColor" strokeWidth="1.1" />
-            <circle cx="5.9" cy="6.7" r="1.05" stroke="currentColor" strokeWidth="1.1" />
-            <path d="m3.1 11.6 3.2-3 2.2 2 2-1.7 2.4 2.2" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+            <rect
+              x="1.9"
+              y="3.4"
+              width="12.2"
+              height="9.2"
+              rx="1.4"
+              stroke="currentColor"
+              strokeWidth="1.1"
+            />
+            <circle
+              cx="5.9"
+              cy="6.7"
+              r="1.05"
+              stroke="currentColor"
+              strokeWidth="1.1"
+            />
+            <path
+              d="m3.1 11.6 3.2-3 2.2 2 2-1.7 2.4 2.2"
+              stroke="currentColor"
+              strokeWidth="1.1"
+              strokeLinejoin="round"
+            />
           </svg>
         )}
-        <span>{item.kind === 'video' ? 'Film' : 'Photo'}</span>
+        <span className="text-white">
+          {item.kind === "video" ? "Video" : "Photo"}
+        </span>
       </span>
 
       <span className="g-cue" aria-hidden="true">
-        <span>{item.kind === 'video' ? 'Play film' : 'View full image'}</span>
-        <svg className="g-cue-icon" viewBox="0 0 16 16" fill="none">
+        <span className="text-white">
+          {item.kind === "video" ? "Play Video" : "View image"}
+        </span>
+        <svg className="g-cue-icon text-white" viewBox="0 0 16 16" fill="none">
           <path
             d="M6 1.75H1.75V6M10 1.75H14.25V6M10 14.25H14.25V10M6 14.25H1.75V10"
             stroke="currentColor"
@@ -75,5 +104,5 @@ export function CardFace({
         </svg>
       </span>
     </>
-  )
+  );
 }

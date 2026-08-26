@@ -1,49 +1,53 @@
-import { useLayoutEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { SplitText } from 'gsap/SplitText'
-import { PROPERTY } from '../../lib/property'
-import { PropertyMedia } from '../PropertyMedia'
-import { useRevealed } from '../../lib/reveal'
-import { useMotionDisabled } from '../../lib/motion'
-import './hero-v3.css'
+import { useLayoutEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
+import { PROPERTY } from "../../lib/property";
+import { PropertyMedia } from "../PropertyMedia";
+import { useRevealed } from "../../lib/reveal";
+import { useMotionDisabled } from "../../lib/motion";
+import "./hero-v3.css";
 
 // Both plugins ship free in gsap 3.13+, so no Club install step is involved.
-gsap.registerPlugin(ScrollTrigger, SplitText)
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 export function ScrollStoryV3() {
-  const root = useRef<HTMLElement>(null)
-  const revealed = useRevealed()
-  const reducedMotion = useMotionDisabled()
+  const root = useRef<HTMLElement>(null);
+  const revealed = useRevealed();
+  const reducedMotion = useMotionDisabled();
 
   useLayoutEffect(() => {
     // Reduced motion gets the settled frame; the stylesheet pins the final state
     // so there is nothing to animate and no ScrollTrigger to install.
-    if (reducedMotion) return
+    if (reducedMotion) return;
     // Held until the loader clears, or the whole intro plays behind it.
-    if (!revealed) return
+    if (!revealed) return;
 
     const ctx = gsap.context(() => {
       const titleSplit = new SplitText('[data-hero="title"]', {
-        type: 'chars',
-        charsClass: 'v3-char',
-        mask: 'chars',
-      })
+        type: "chars",
+        charsClass: "v3-char",
+        mask: "chars",
+      });
 
       const standfirstSplit = new SplitText('[data-hero="standfirst"]', {
-        type: 'words',
-        wordsClass: 'v3-word',
-      })
+        type: "words",
+        wordsClass: "v3-word",
+      });
 
-      gsap.set(titleSplit.chars, { yPercent: 100 })
-      gsap.set(standfirstSplit.words, { opacity: 0, y: 30, rotationX: -45 })
-      gsap.set('[data-hero="body"]', { opacity: 0, y: 40 })
-      gsap.set('[data-hero="scroll"]', { opacity: 0, y: 20 })
-      gsap.set('[data-hero="meta"]', { opacity: 0, y: -20 })
+      gsap.set(titleSplit.chars, { yPercent: 100 });
+      gsap.set(standfirstSplit.words, { opacity: 0, y: 30, rotationX: -45 });
+      gsap.set('[data-hero="body"]', { opacity: 0, y: 40 });
+      gsap.set('[data-hero="scroll"]', { opacity: 0, y: 20 });
+      gsap.set('[data-hero="meta"]', { opacity: 0, y: -20 });
 
       gsap
-        .timeline({ defaults: { ease: 'power3.out' } })
-        .to(titleSplit.chars, { yPercent: 0, duration: 1.6, stagger: { each: 0.08 } }, 0.2)
+        .timeline({ defaults: { ease: "power3.out" } })
+        .to(
+          titleSplit.chars,
+          { yPercent: 0, duration: 1.6, stagger: { each: 0.08 } },
+          0.2,
+        )
         .to(
           standfirstSplit.words,
           { opacity: 1, y: 0, rotationX: 0, duration: 1.1, stagger: 0.04 },
@@ -51,7 +55,7 @@ export function ScrollStoryV3() {
         )
         .to('[data-hero="body"]', { opacity: 1, y: 0, duration: 1.3 }, 1.2)
         .to('[data-hero="scroll"]', { opacity: 1, y: 0, duration: 0.9 }, 1.8)
-        .to('[data-hero="meta"]', { opacity: 1, y: 0, duration: 0.9 }, 1.6)
+        .to('[data-hero="meta"]', { opacity: 1, y: 0, duration: 0.9 }, 1.6);
 
       // The cue is an instruction, so it stops once it has been followed.
       // A toggled attribute rather than a tween: the sweep is a CSS animation
@@ -59,49 +63,49 @@ export function ScrollStoryV3() {
       // survives a reduced-motion revert without GSAP holding the value.
       ScrollTrigger.create({
         trigger: root.current,
-        start: 'top+=80 top',
+        start: "top+=80 top",
         onEnter: () =>
           root.current
             ?.querySelector('[data-hero="scroll"]')
-            ?.setAttribute('data-taken', 'true'),
+            ?.setAttribute("data-taken", "true"),
         onLeaveBack: () =>
           root.current
             ?.querySelector('[data-hero="scroll"]')
-            ?.removeAttribute('data-taken'),
-      })
+            ?.removeAttribute("data-taken"),
+      });
 
       // Scroll parallax. Values are written with gsap.set rather than a
       // zero-duration gsap.to, which would allocate a throwaway tween on every
       // scroll frame.
       ScrollTrigger.create({
         trigger: root.current,
-        start: 'top top',
-        end: 'bottom top',
+        start: "top top",
+        end: "bottom top",
         scrub: 1,
         onUpdate: ({ progress }) => {
           gsap.set('[data-hero="img"]', {
             yPercent: progress * 30,
             scale: 1 + progress * 0.1,
-          })
+          });
           gsap.set('[data-hero="title"]', {
             yPercent: progress * -50,
             opacity: 1 - progress,
-          })
+          });
           gsap.set('[data-hero="content"]', {
             yPercent: progress * -30,
             opacity: 1 - progress * 1.5,
-          })
+          });
         },
-      })
+      });
 
       return () => {
-        titleSplit.revert()
-        standfirstSplit.revert()
-      }
-    }, root)
+        titleSplit.revert();
+        standfirstSplit.revert();
+      };
+    }, root);
 
-    return () => ctx.revert()
-  }, [revealed, reducedMotion])
+    return () => ctx.revert();
+  }, [revealed, reducedMotion]);
 
   return (
     <section
@@ -136,13 +140,13 @@ export function ScrollStoryV3() {
         <div className="hero-v3__heading">
           {/* Stacked lines, each its own block so SplitText masks the letters
               per line rather than treating the name as one run. */}
-          <h1 data-hero="title" className="hero-v3__title">
+          {/* <h1 data-hero="title" className="hero-v3__title">
             {PROPERTY.displayLines.map((line) => (
               <span key={line} className="hero-v3__title-line">
                 {line}
               </span>
             ))}
-          </h1>
+          </h1> */}
 
           <div data-hero="content" className="hero-v3__right">
             <div>
@@ -167,5 +171,5 @@ export function ScrollStoryV3() {
         </div>
       </div>
     </section>
-  )
+  );
 }

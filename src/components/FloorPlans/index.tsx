@@ -1,30 +1,35 @@
-import { useLayoutEffect, useRef, useState } from 'react'
-import { ArrowUpRight, ChevronLeft, ChevronRight, Download } from 'lucide-react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { PROPERTY } from '../../lib/property'
-import { MediaLightbox, type LightboxMedia } from '../MediaLightbox'
-import { DocumentGate, type GatedDocument } from '../DocumentGate'
-import { useMotionDisabled } from '../../lib/motion'
-import './styles.css'
+import { useLayoutEffect, useRef, useState } from "react";
+import {
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+} from "lucide-react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { PROPERTY } from "../../lib/property";
+import { MediaLightbox, type LightboxMedia } from "../MediaLightbox";
+import { DocumentGate, type GatedDocument } from "../DocumentGate";
+import { useMotionDisabled } from "../../lib/motion";
+import "./styles.css";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
-const { floorPlans } = PROPERTY
+const { floorPlans } = PROPERTY;
 
 export function FloorPlans() {
-  const root = useRef<HTMLElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const reducedMotion = useMotionDisabled()
-  const [viewerIndex, setViewerIndex] = useState<number | null>(null)
+  const root = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useMotionDisabled();
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   /** The document a visitor has asked for, and so the gate to show. */
-  const [gated, setGated] = useState<GatedDocument | null>(null)
+  const [gated, setGated] = useState<GatedDocument | null>(null);
 
   useLayoutEffect(() => {
-    if (reducedMotion) return
+    if (reducedMotion) return;
 
-    const ctx = gsap.context(() => {}, root)
-    let cancelled = false
+    const ctx = gsap.context(() => {}, root);
+    let cancelled = false;
 
     // As elsewhere on the page: these triggers are `once: true`, and one built
     // before the CSS lands or the webfont swaps measures against the wrong
@@ -34,32 +39,33 @@ export function FloorPlans() {
       new Promise<void>((resolve) =>
         requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
       ),
-    ])
+    ]);
 
     void layoutSettled.then(() => {
-      if (cancelled) return
+      if (cancelled) return;
       ctx.add(() => {
-        gsap.utils.toArray<HTMLElement>('[data-anim="element"]').forEach((el) => {
-          gsap.set(el, { visibility: 'visible' })
-          gsap.from(el, {
-            opacity: 0,
-            y: 40,
-            duration: 1.2,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-          })
-        })
+        gsap.utils
+          .toArray<HTMLElement>('[data-anim="element"]')
+          .forEach((el) => {
+            gsap.set(el, { visibility: "visible" });
+            gsap.from(el, {
+              opacity: 0,
+              y: 40,
+              duration: 1.2,
+              ease: "power3.out",
+              scrollTrigger: { trigger: el, start: "top 88%", once: true },
+            });
+          });
 
-
-        ScrollTrigger.refresh()
-      })
-    })
+        ScrollTrigger.refresh();
+      });
+    });
 
     return () => {
-      cancelled = true
-      ctx.revert()
-    }
-  }, [reducedMotion])
+      cancelled = true;
+      ctx.revert();
+    };
+  }, [reducedMotion]);
 
   /**
    * The sheets are dense enough to want a full-screen read, so they reuse the
@@ -68,17 +74,17 @@ export function FloorPlans() {
   const withPlans = floorPlans.plans.filter(
     (plan): plan is (typeof floorPlans.plans)[number] & { image: string } =>
       Boolean(plan.image),
-  )
+  );
 
   const viewerItems: LightboxMedia[] = withPlans.map((plan) => ({
-    kind: 'image',
+    kind: "image",
     src: plan.image,
     title: `${plan.label} — ${plan.totalSqft} sq ft`,
     alt: `${plan.label} floor plan, ${PROPERTY.name}`,
-  }))
+  }));
 
   /** Which layout the carousel opens on. */
-  const initialIndex = Math.min(1, Math.max(withPlans.length - 1, 0))
+  const initialIndex = Math.min(1, Math.max(withPlans.length - 1, 0));
 
   /**
    * Move one card, wrapping round at either end.
@@ -93,34 +99,34 @@ export function FloorPlans() {
    * time the visitor swipes.
    */
   const step = (direction: 1 | -1) => {
-    const track = trackRef.current
-    if (!track) return
+    const track = trackRef.current;
+    if (!track) return;
 
-    const cards = Array.from(track.children) as HTMLElement[]
-    if (cards.length === 0) return
+    const cards = Array.from(track.children) as HTMLElement[];
+    if (cards.length === 0) return;
 
     const centreOf = (el: Element) => {
-      const rect = el.getBoundingClientRect()
-      return rect.left + rect.width / 2
-    }
-    const middle = centreOf(track)
+      const rect = el.getBoundingClientRect();
+      return rect.left + rect.width / 2;
+    };
+    const middle = centreOf(track);
 
-    let current = 0
-    let best = Infinity
+    let current = 0;
+    let best = Infinity;
     cards.forEach((card, index) => {
-      const distance = Math.abs(centreOf(card) - middle)
+      const distance = Math.abs(centreOf(card) - middle);
       if (distance < best) {
-        best = distance
-        current = index
+        best = distance;
+        current = index;
       }
-    })
+    });
 
-    const target = cards[(current + direction + cards.length) % cards.length]
+    const target = cards[(current + direction + cards.length) % cards.length];
     track.scrollTo({
       left: track.scrollLeft + (centreOf(target) - middle),
-      behavior: reducedMotion ? 'auto' : 'smooth',
-    })
-  }
+      behavior: reducedMotion ? "auto" : "smooth",
+    });
+  };
 
   return (
     <section
@@ -161,23 +167,24 @@ export function FloorPlans() {
             track could only ever be walked to a stop and back. These wrap. */}
         <div
           data-anim="element"
-          className="fp-carousel-shell fp-hide relative mx-auto mt-10 w-full max-w-[60rem] sm:px-14 lg:mt-12"
+          className="fp-carousel-shell fp-hide relative mx-auto mt-10 w-full max-w-[60rem] lg:mt-12"
         >
           <button
             type="button"
             onClick={() => step(-1)}
-            className="fp-arrow left-0"
+            className="absolute left-0 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-stroke text-text transition-colors duration-300 hover:border-text hover:bg-text hover:text-bg"
             aria-label="Previous layout"
           >
-            <ChevronLeft size={18} strokeWidth={1.25} aria-hidden="true" />
+            <ChevronLeft size={19} strokeWidth={1.25} aria-hidden="true" />
           </button>
+
           <button
             type="button"
             onClick={() => step(1)}
-            className="fp-arrow right-0"
+            className="absolute right-0 top-1/2 z-10 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-stroke text-text transition-colors duration-300 hover:border-text hover:bg-text hover:text-bg"
             aria-label="Next layout"
           >
-            <ChevronRight size={18} strokeWidth={1.25} aria-hidden="true" />
+            <ChevronRight size={19} strokeWidth={1.25} aria-hidden="true" />
           </button>
 
           <div
@@ -187,11 +194,13 @@ export function FloorPlans() {
             aria-label={`${floorPlans.plans.length} layouts`}
           >
             {floorPlans.plans.map((plan, index) => {
-              const viewerIndex = withPlans.findIndex((p) => p.label === plan.label)
+              const viewerIndex = withPlans.findIndex(
+                (p) => p.label === plan.label,
+              );
               return (
                 <div
                   key={plan.label}
-                  className={index === initialIndex ? 'fp-start' : undefined}
+                  className={index === initialIndex ? "fp-start" : undefined}
                 >
                   <div className="fp-plate">
                     {plan.image ? (
@@ -205,7 +214,7 @@ export function FloorPlans() {
                           src={plan.image}
                           alt={`${plan.label} floor plan, ${PROPERTY.name}`}
                           className="fp-sheet"
-                          loading={index <= initialIndex + 1 ? 'eager' : 'lazy'}
+                          loading={index <= initialIndex + 1 ? "eager" : "lazy"}
                           decoding="async"
                         />
                         <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-bg/90 to-transparent pb-3 pt-9 text-[10px] uppercase tracking-[0.25em] text-text opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
@@ -226,10 +235,11 @@ export function FloorPlans() {
                     {plan.label}
                   </h3>
                   <p className="fp-meta text-[11px] uppercase tracking-[0.14em] text-muted">
-                    {plan.baths} bath · {plan.totalSqm} m² · {plan.totalSqft} sq ft
+                    {plan.baths} bath · {plan.totalSqm} m² · {plan.totalSqft} sq
+                    ft
                   </p>
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -245,7 +255,9 @@ export function FloorPlans() {
                 <button
                   key={doc.label}
                   type="button"
-                  onClick={() => setGated({ label: doc.label, url: doc.url as string })}
+                  onClick={() =>
+                    setGated({ label: doc.label, url: doc.url as string })
+                  }
                   className="flex flex-1 items-center justify-center gap-2 border border-champagne bg-champagne whitespace-nowrap px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-bg transition-colors duration-300 hover:border-white hover:bg-white"
                 >
                   {doc.label}
@@ -260,7 +272,11 @@ export function FloorPlans() {
                   className="flex flex-1 items-center justify-center gap-2 border border-champagne/60 whitespace-nowrap px-6 py-4 text-[11px] font-medium uppercase tracking-[0.14em] text-text transition-colors duration-300 hover:border-champagne hover:bg-champagne hover:text-bg"
                 >
                   {doc.requestLabel}
-                  <ArrowUpRight size={14} strokeWidth={1.25} aria-hidden="true" />
+                  <ArrowUpRight
+                    size={14}
+                    strokeWidth={1.25}
+                    aria-hidden="true"
+                  />
                 </a>
               ),
             )}
@@ -282,5 +298,5 @@ export function FloorPlans() {
         onNavigate={setViewerIndex}
       />
     </section>
-  )
+  );
 }

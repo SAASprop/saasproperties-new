@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion'
-import { BRAND, FOOTER } from '../lib/content'
-import { useMotionDisabled } from '../lib/motion'
-import { ArrowUp } from 'lucide-react'
+import { motion } from "framer-motion";
+import { BRAND, FOOTER } from "../lib/content";
+import { useMotionDisabled } from "../lib/motion";
+import { ArrowUp } from "lucide-react";
 
 /** Rise-and-fade, staggered by band so the footer arrives in reading order. */
-const BANDS = [0, 0.09, 0.18]
+const BANDS = [0, 0.09, 0.18];
 
 export function ContactFooter() {
-  const motionOff = useMotionDisabled()
+  const motionOff = useMotionDisabled();
 
   /**
    * The whole footer was one framer-motion block that honoured neither the
@@ -26,8 +26,12 @@ export function ContactFooter() {
           initial: { opacity: 0, y: 24 },
           whileInView: { opacity: 1, y: 0 },
           viewport: { once: true, amount: 0.3 },
-          transition: { duration: 0.9, delay: BANDS[order], ease: [0.16, 1, 0.3, 1] as const },
-        }
+          transition: {
+            duration: 0.9,
+            delay: BANDS[order],
+            ease: [0.16, 1, 0.3, 1] as const,
+          },
+        };
 
   return (
     <footer className="border-t border-stroke px-4 py-24 sm:px-6 sm:py-32">
@@ -39,7 +43,7 @@ export function ContactFooter() {
 
         <a
           href={`mailto:${BRAND.email}`}
-          className="accent-gradient-text mt-8 inline-block break-all font-display text-2xl italic sm:text-4xl md:text-5xl"
+          className="mt-8 inline-block break-all font-display text-2xl italic sm:text-4xl md:text-5xl"
         >
           {BRAND.email}
         </a>
@@ -47,7 +51,7 @@ export function ContactFooter() {
         <p className="mt-8 max-w-md text-sm text-muted">{BRAND.tagline}</p>
       </motion.div>
 
-      <motion.div className="mt-16 flex flex-wrap gap-x-8 gap-y-3" {...band(1)}>
+      {/* <motion.div className="mt-16 flex flex-wrap gap-x-8 gap-y-3" {...band(1)}>
         {BRAND.socials.map((social) => (
           <a
             key={social.label}
@@ -59,27 +63,29 @@ export function ContactFooter() {
             {social.label}
           </a>
         ))}
-      </motion.div>
+      </motion.div> */}
 
       <motion.div
-        className="mt-16 flex flex-col gap-4 border-t border-stroke pt-8 sm:flex-row sm:items-center sm:justify-between"
+        className="mt-10 flex flex-col gap-4 border-t border-stroke pt-8 sm:flex-row sm:items-center sm:justify-between"
         {...band(2)}
       >
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted">{FOOTER.copyright}</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-muted">
+          {FOOTER.copyright}
+        </p>
         <button
           type="button"
           // Jumps rather than glides when motion is off or unwanted: a
           // full-page smooth scroll is the largest movement on the site, and it
           // was the one thing here ignoring the preference outright.
           onClick={() =>
-            window.scrollTo({ top: 0, behavior: motionOff ? 'auto' : 'smooth' })
+            window.scrollTo({ top: 0, behavior: motionOff ? "auto" : "smooth" })
           }
-          className="gradient-border-ring inline-flex items-center gap-2 self-start rounded-full border border-stroke px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] text-text transition-colors duration-300 hover:bg-text/5"
+          className="inline-flex items-center gap-2 self-start rounded-full border border-stroke px-5 py-2.5 text-[10px] uppercase tracking-[0.2em] text-text transition-colors duration-300 hover:bg-text/5"
         >
           {FOOTER.backToTop}
           <ArrowUp size={13} strokeWidth={1.25} aria-hidden="true" />
         </button>
       </motion.div>
     </footer>
-  )
+  );
 }
