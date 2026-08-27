@@ -123,8 +123,8 @@ export function Overview() {
       {/* Same container as the navbar and the hero, so every left edge lines up. */}
       <div className="mx-auto max-w-[1600px] px-5 md:px-[3.75rem]">
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-          {/* Caption + heading */}
-          <div className="lg:col-span-4">
+          {/* Caption, heading and body — one column, read straight down. */}
+          <div className="lg:col-span-5 lg:flex lg:flex-col">
             <p data-anim="element" className="ov-hide eyebrow">
               {overview.caption}
             </p>
@@ -138,10 +138,25 @@ export function Overview() {
                 </span>
               ))}
             </h2>
+
+            {/* Sits under the heading it belongs to. mt-auto pushes it to the
+                foot of the column on a wide screen, so the copy and the bottom
+                of the portrait beside it finish on the same line. */}
+            <div className="mt-8 flex flex-col gap-6 lg:mt-14 lg:max-w-[34rem]">
+              {overview.body.map((paragraph) => (
+                <p
+                  key={paragraph}
+                  data-anim="element"
+                  className="ov-hide text-base leading-relaxed tracking-[0.02em] text-muted"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </div>
 
           {/* Portrait image with the wipe panel over it */}
-          <div className="relative aspect-[2/3] overflow-hidden lg:col-span-4">
+          <div className="relative aspect-[2/3] overflow-hidden lg:col-span-6 lg:col-start-7 lg:aspect-[4/5]">
             <img
               src={overview.image.src}
               alt={overview.image.alt}
@@ -162,19 +177,6 @@ export function Overview() {
               // before the wipe starts.
               className="ov-hide absolute inset-x-0 -top-[1%] h-[101%] bg-bg"
             />
-          </div>
-
-          {/* Body copy */}
-          <div className="flex flex-col gap-6 lg:col-span-3 lg:col-start-10 lg:justify-end lg:pb-2">
-            {overview.body.map((paragraph) => (
-              <p
-                key={paragraph}
-                data-anim="element"
-                className="ov-hide text-base leading-relaxed tracking-[0.02em] text-muted"
-              >
-                {paragraph}
-              </p>
-            ))}
           </div>
         </div>
       </div>

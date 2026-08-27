@@ -92,9 +92,11 @@ export function CardFace({
       </span>
 
       <span className="g-cue" aria-hidden="true">
-        <span className="text-white">
-          {item.kind === "video" ? "Play Video" : "View image"}
-        </span>
+        {/* The picture's own name, not an instruction. "View image" was the
+            same words on every card: it described what a click does, which the
+            button's aria-label already says, and told the visitor nothing about
+            what they were looking at. */}
+        <span className="g-cue-name text-white">{item.title}</span>
         <svg className="g-cue-icon text-white" viewBox="0 0 16 16" fill="none">
           <path
             d="M6 1.75H1.75V6M10 1.75H14.25V6M10 14.25H14.25V10M6 14.25H1.75V10"

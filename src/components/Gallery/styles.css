@@ -430,7 +430,7 @@
 .g-section {
   --card-w: clamp(240px, 104vw, 420px);
   --radius-card: 14px;
-  --spin: 58s;
+  --spin: 96s;
 }
 
 /* Tablet: five across, the pair at 40deg cut by the frame. */
@@ -438,7 +438,7 @@
   .g-section {
     --card-w: clamp(270px, 35vw, 380px);
     --radius-card: 16px;
-    --spin: 62s;
+    --spin: 104s;
   }
 }
 
@@ -447,7 +447,7 @@
   .g-section {
     --card-w: clamp(320px, 23vw, 540px);
     --radius-card: 20px;
-    --spin: 66s;
+    --spin: 112s;
   }
 }
 
@@ -573,4 +573,16 @@
     transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1);
     transform: none;
   }
+}
+
+/* The card's name in the hover cue. A long one is cut rather than
+   allowed to wrap: the cue is a single line pinned to the bottom of
+   the frame, and a second line would push the icon out of the card.
+   min-width: 0 is what lets a flex child shrink below its content —
+   without it the ellipsis never engages. */
+.g-cue-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

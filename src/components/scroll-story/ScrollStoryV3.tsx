@@ -83,9 +83,15 @@ export function ScrollStoryV3() {
         end: "bottom top",
         scrub: 1,
         onUpdate: ({ progress }) => {
+          // The reel pushes in as the page leaves it. 1.35 rather than the
+          // 1.1 it was: at a tenth the zoom read as drift rather than as a
+          // move, and it also has to out-cover the 30% downward drift — the
+          // frame is translated by 30% of its own height, so without enough
+          // scale the top of it would pull away from the top of the hero. At
+          // 1.35 there is 17.5% of overhang on each edge.
           gsap.set('[data-hero="img"]', {
             yPercent: progress * 30,
-            scale: 1 + progress * 0.1,
+            scale: 1 + progress * 0.35,
           });
           gsap.set('[data-hero="title"]', {
             yPercent: progress * -50,

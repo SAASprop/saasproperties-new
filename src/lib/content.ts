@@ -86,11 +86,81 @@ export const SCROLL_STORY = {
   ],
 } as const;
 
+/**
+ * The footer, as data.
+ *
+ * Written as columns of typed links rather than as markup so the component
+ * stays a layout and the copy stays here — adding a branch or a project is an
+ * edit to this object alone.
+ *
+ * TODO(copy): every href below is a placeholder except the two broker addresses
+ * and the phone number. Swap in the real destinations before launch; the ones
+ * that have nowhere to go yet are `null`, which renders them as plain text
+ * instead of as a link that goes nowhere.
+ */
 export const FOOTER = {
   eyebrow: "Enquiries",
   heading: "Start a conversation",
   backToTop: "Back to top",
-  copyright: `© ${new Date().getFullYear()} SAAS Properties LLC. All rights reserved.`,
+
+  /** The number both enquiry columns publish. */
+  salesPhone: { display: "800 27", href: "tel:80027" },
+
+  columns: [
+    {
+      title: "Sales Enquiry",
+      links: [
+        { label: "Call 800 27", href: "tel:80027" },
+        { label: "Visit SAAS Sales Gallery Abu Dhabi", href: null },
+        { label: "Visit SAAS Sales Gallery Dubai", href: null },
+      ],
+    },
+    {
+      title: "For Community Management (Fedary)",
+      links: [
+        { label: "Call 800 27", href: "tel:80027" },
+        { label: "Visit Community Management Website", href: null },
+      ],
+    },
+    {
+      title: "Broker Registration",
+      links: [
+        {
+          label: "Dubai Branch — dxb.agents@saasproperties.com",
+          href: "mailto:dxb.agents@saasproperties.com",
+        },
+        {
+          label: "Abu Dhabi Branch — agents@saasproperties.com",
+          href: "mailto:agents@saasproperties.com",
+        },
+      ],
+    },
+    {
+      title: "Handed Over Projects",
+      links: [
+        { label: "One Reem", href: null },
+        { label: "Reem Five", href: null },
+        { label: "Reem Nine", href: null },
+        { label: "SAAS Tower", href: null },
+      ],
+    },
+  ],
+
+  /** The short run of site-wide links, set apart from the columns above. */
+  primary: [
+    { label: "About Us", href: null },
+    { label: "Contact Us", href: "#contact" },
+    { label: "Properties", href: null },
+    { label: "Leasing", href: null },
+    { label: "Media", href: null },
+  ],
+
+  legal: [
+    { label: "Privacy Policy", href: null },
+    { label: "Terms and Conditions", href: null },
+  ],
+
+  copyright: `© ${new Date().getFullYear()} SAAS Properties LLC`,
 } as const;
 
 export const ENQUIRE = {
