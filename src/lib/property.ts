@@ -253,13 +253,13 @@ const asset = (file: string) =>
 const REEM_VIDEO = asset("ReemEleven.mp4");
 // TODO(asset): frame zero of the reel above, so the poster matches the first
 // frame and there is no jump when playback starts. Replace with a graded still.
-const REEM_POSTER = asset("reem-eleven-poster.jpg");
+const REEM_POSTER = asset("reem-eleven-poster.webp");
 
 export const PROPERTY: Property = {
   eyebrow: "Residential Tower",
   name: "Reem Eleven",
   displayLines: ["Reem", "Eleven"],
-  logo: asset("reem-eleven-logo.png"),
+  logo: asset("reem-eleven-logo.webp"),
   summary:
     "A luxury residential tower at the heart of Reem Island — furnished studios through three-bedroom homes, with resort-style amenities and lavish living spaces.",
   status: "Now selling",
@@ -304,7 +304,7 @@ export const PROPERTY: Property = {
     ],
     image: {
       // TODO(asset): frame from the reel, standing in until photography lands.
-      src: asset("reem-eleven-overview.jpg"),
+      src: asset("reem-eleven-overview.webp"),
       alt: "Reem Eleven seen from street level, its full height against the sky.",
     },
     stats: [
@@ -327,7 +327,7 @@ export const PROPERTY: Property = {
     ],
     image: {
       // TODO(asset): frame from the reel, standing in until photography lands.
-      src: asset("reem-features-bg.jpg"),
+      src: asset("reem-features-bg.webp"),
       alt: "The tower's facade above the pool terrace, the sea beyond.",
     },
     items: [
@@ -382,28 +382,28 @@ export const PROPERTY: Property = {
         baths: 1,
         totalSqm: 41.31,
         totalSqft: 444.66,
-        image: asset("floorplans/studio-web.jpg"),
+        image: asset("floorplans/studio-web.webp"),
       },
       {
         label: "1 Bedroom",
         baths: 2,
         totalSqm: 79.52,
         totalSqft: 855.95,
-        image: asset("floorplans/1bed-web.jpg"),
+        image: asset("floorplans/1bed-web.webp"),
       },
       {
         label: "2 Bedroom",
         baths: 3,
         totalSqm: 109.05,
         totalSqft: 1173.8,
-        image: asset("floorplans/2bed-web.jpg"),
+        image: asset("floorplans/2bed-web.webp"),
       },
       {
         label: "3 Bedroom",
         baths: 4,
         totalSqm: 202.57,
         totalSqft: 2180.41,
-        image: asset("floorplans/3bed-web.jpg"),
+        image: asset("floorplans/3bed-web.webp"),
       },
     ],
     // TODO(asset): add the PDFs to /public and set the urls, e.g.
@@ -442,7 +442,7 @@ export const PROPERTY: Property = {
       "Something went wrong sending that. Please try again, or email us directly.",
     image: {
       // TODO(asset): frame from the reel, standing in until photography lands.
-      src: asset("reem-contact-bg.jpg"),
+      src: asset("reem-contact-bg.webp"),
       alt: "The pool terrace at Reem Eleven, the city skyline beyond.",
     },
     // TODO(integration): no form backend exists yet. Until an endpoint is set
@@ -476,25 +476,25 @@ export const PROPERTY: Property = {
           },
           {
             kind: "image",
-            src: asset("gallery/exterior/reem-eleven-1.png"),
+            src: asset("gallery/exterior/reem-eleven-1.webp"),
             title: "Pool deck",
             alt: "The infinity pool on the podium, a mature olive at its centre and the open sea beyond.",
           },
           {
             kind: "image",
-            src: asset("gallery/exterior/reem-eleven-2.jpg"),
+            src: asset("gallery/exterior/reem-eleven-2.webp"),
             title: "Terrace",
             alt: "The pool terrace with loungers along one edge and the Abu Dhabi skyline behind.",
           },
           {
             kind: "image",
-            src: asset("gallery/exterior/reem-eleven-3.jpg"),
+            src: asset("gallery/exterior/reem-eleven-3.webp"),
             title: "Elevation",
             alt: "The tower's facade at dusk, lit balconies stepping up against the city.",
           },
           {
             kind: "image",
-            src: asset("gallery/exterior/reem-eleven-4.jpg"),
+            src: asset("gallery/exterior/reem-eleven-4.webp"),
             title: "Terrace bar",
             alt: "The shaded terrace bar beside the pool, loungers along the water and the sea beyond.",
           },
@@ -506,43 +506,43 @@ export const PROPERTY: Property = {
         items: [
           {
             kind: "image",
-            src: asset("gallery/interior/reem-eleven-int-1.jpg"),
+            src: asset("gallery/interior/reem-eleven-int-1.webp"),
             title: "Living and dining",
             alt: "An open living and dining room, herringbone floor and full-height glazing to the water.",
           },
           {
             kind: "image",
-            src: asset("gallery/interior/reem-eleven-int-5.jpg"),
+            src: asset("gallery/interior/reem-eleven-int-5.webp"),
             title: "Sitting room",
             alt: "A sitting room with a green sofa, joinery wall and the sea through the glass.",
           },
           {
             kind: "image",
-            src: asset("gallery/interior/reem-eleven-int-2.jpg"),
+            src: asset("gallery/interior/reem-eleven-int-2.webp"),
             title: "Kitchen",
             alt: "A dark timber kitchen with a stone island and four stools.",
           },
           {
             kind: "image",
-            src: asset("gallery/interior/reem-eleven-int-6.jpg"),
+            src: asset("gallery/interior/reem-eleven-int-6.webp"),
             title: "Open kitchen",
             alt: "A pale timber kitchen open to the living space, pendants over the counter.",
           },
           {
             kind: "image",
-            src: asset("gallery/interior/reem-eleven-int-3.jpg"),
+            src: asset("gallery/interior/reem-eleven-int-3.webp"),
             title: "Principal bedroom",
             alt: "The principal bedroom, upholstered headboard wall and the city lights beyond the glass.",
           },
           {
             kind: "image",
-            src: asset("gallery/interior/reem-eleven-int-7.jpg"),
+            src: asset("gallery/interior/reem-eleven-int-7.webp"),
             title: "Second bedroom",
             alt: "A second bedroom in pale tones, artwork above the bed and a terrace beyond.",
           },
           {
             kind: "image",
-            src: asset("gallery/interior/reem-eleven-int-4.jpg"),
+            src: asset("gallery/interior/reem-eleven-int-4.webp"),
             title: "Bathroom",
             alt: "A marble bathroom with a freestanding stone tub and twin lit mirrors.",
           },

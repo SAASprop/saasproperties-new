@@ -50,7 +50,11 @@ export function CardFace({
           label, where it reads as a plate on the frame rather than a control. */}
       <span className="g-kind text-white" aria-hidden="true">
         {item.kind === "video" ? (
-          <svg className="g-kind-icon" viewBox="0 0 16 16" fill="none">
+          <svg
+            className="g-kind-icon text-white"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
             <circle
               cx="8"
               cy="8"
@@ -61,7 +65,11 @@ export function CardFace({
             <path d="M6.6 5.5 11 8l-4.4 2.5z" fill="currentColor" />
           </svg>
         ) : (
-          <svg className="g-kind-icon" viewBox="0 0 16 16" fill="none">
+          <svg
+            className="g-kind-icon text-white"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
             <rect
               x="1.9"
               y="3.4"

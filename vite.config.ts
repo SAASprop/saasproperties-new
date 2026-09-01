@@ -48,4 +48,44 @@ function spaFallback(): Plugin {
 export default defineConfig({
   base: '/saasproperties-new/',
   plugins: [react(), spaFallback()],
+
+  build: {
+    // The browsers this actually targets all support modern syntax, and
+    // transpiling below that only adds bytes and helper functions to ship.
+    target: 'es2020',
+
+    // Vite's default is 4 kB, which inlined most of the country flags into the
+    // JS as base64. Base64 is a third larger than the bytes it encodes and it
+    // lands in the render-blocking bundle rather than in a file the browser can
+    // fetch lazily and cache on its own. 1 kB keeps that for genuinely tiny
+    // assets only.
+    assetsInlineLimit: 1024,
+
+    rollupOptions: {
+      output: {
+        /**
+         * Split the three libraries out of the app chunk.
+         *
+         * They change far less often than the page does, so on a repeat visit
+         * or a redeploy the browser can keep them: editing a section no longer
+         * invalidates React and GSAP along with it. They also download in
+         * parallel rather than as one long single-file transfer.
+         *
+         * Written as a function because Vite 8 bundles with Rolldown, whose
+         * `manualChunks` takes a module id rather than Rollup's object map.
+         */
+        manualChunks: (id: string) => {
+          if (!id.includes('node_modules')) return null
+          if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) return 'react'
+          if (/[\\/]node_modules[\\/]gsap[\\/]/.test(id)) return 'gsap'
+          // framer-motion is deliberately not named here. Giving it a chunk of
+          // its own made it a chunk of the entry, which Vite then emitted a
+          // modulepreload for — so 130 kB was fetched at the highest priority on
+          // every first load even though nothing above the fold uses it any
+          // more. Left alone, it lands inside the one chunk that does.
+          return null
+        },
+      },
+    },
+  },
 })

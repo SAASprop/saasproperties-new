@@ -9,7 +9,7 @@ import { SocialGlyph } from "./SocialGlyph";
 import { useMotionDisabled } from "../../lib/motion";
 
 import "./styles.css";
-import "flag-icons/css/flag-icons.min.css";
+import { FLAGS, type FlagIso } from "./flags";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -561,8 +561,12 @@ export function Contact() {
         "
                             aria-hidden="true"
                           >
-                            <span
-                              className={`fi fi-${selectedCountry.iso} block h-full w-full`}
+                            <img
+                              src={FLAGS[selectedCountry.iso as FlagIso]}
+                              alt=""
+                              width={20}
+                              height={15}
+                              className="block h-full w-full object-cover"
                             />
                           </span>
 
@@ -701,8 +705,14 @@ export function Contact() {
                     "
                                         aria-hidden="true"
                                       >
-                                        <span
-                                          className={`fi fi-${country.iso} block h-full w-full`}
+                                        <img
+                                          src={FLAGS[country.iso as FlagIso]}
+                                          alt=""
+                                          width={20}
+                                          height={15}
+                                          loading="lazy"
+                                          decoding="async"
+                                          className="block h-full w-full object-cover"
                                         />
                                       </span>
 

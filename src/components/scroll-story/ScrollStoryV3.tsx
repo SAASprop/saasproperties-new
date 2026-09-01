@@ -41,21 +41,28 @@ export function ScrollStoryV3() {
       gsap.set('[data-hero="scroll"]', { opacity: 0, y: 20 });
       gsap.set('[data-hero="meta"]', { opacity: 0, y: -20 });
 
+      // Offsets pulled in across the board. The sequence is unchanged — title,
+      // standfirst, body, then the meta row and the cue — but it used to run
+      // over 2.7s, and the body paragraph, which is the largest text on screen
+      // and so what Chrome measures as the Largest Contentful Paint, did not
+      // begin to appear until 1.2s in. On a phone that landed on top of the
+      // script cost and put LCP past four seconds. The whole entrance now
+      // resolves in about half the time and still reads as choreography.
       gsap
         .timeline({ defaults: { ease: "power3.out" } })
         .to(
           titleSplit.chars,
-          { yPercent: 0, duration: 1.6, stagger: { each: 0.08 } },
-          0.2,
+          { yPercent: 0, duration: 1.1, stagger: { each: 0.045 } },
+          0.05,
         )
         .to(
           standfirstSplit.words,
-          { opacity: 1, y: 0, rotationX: 0, duration: 1.1, stagger: 0.04 },
-          0.9,
+          { opacity: 1, y: 0, rotationX: 0, duration: 0.8, stagger: 0.025 },
+          0.35,
         )
-        .to('[data-hero="body"]', { opacity: 1, y: 0, duration: 1.3 }, 1.2)
-        .to('[data-hero="scroll"]', { opacity: 1, y: 0, duration: 0.9 }, 1.8)
-        .to('[data-hero="meta"]', { opacity: 1, y: 0, duration: 0.9 }, 1.6);
+        .to('[data-hero="body"]', { opacity: 1, y: 0, duration: 0.75 }, 0.5)
+        .to('[data-hero="scroll"]', { opacity: 1, y: 0, duration: 0.7 }, 0.95)
+        .to('[data-hero="meta"]', { opacity: 1, y: 0, duration: 0.7 }, 0.8);
 
       // The cue is an instruction, so it stops once it has been followed.
       // A toggled attribute rather than a tween: the sweep is a CSS animation

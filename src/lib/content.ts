@@ -50,9 +50,9 @@ export const SCRUB_VIDEO = {
 export const LOADER = {
   label: "SAAS Properties",
   words: ["Luxury", "Develop", "Inspire"],
-  durationMs: 2600,
-  completeDelayMs: 600,
-  wordIntervalMs: 700,
+  durationMs: 1100,
+  completeDelayMs: 180,
+  wordIntervalMs: 380,
 } as const;
 
 /**

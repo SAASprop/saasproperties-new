@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import gsap from "gsap";
 import { BRAND, ENQUIRE, NAV_LINKS } from "../lib/content";
 import { PROPERTY } from "../lib/property";
 import { SaasLogo } from "./SaasLogo";
+import "./navbar.css";
 import { useMotionDisabled } from "../lib/motion";
 
 export function Navbar() {
@@ -258,19 +258,20 @@ export function Navbar() {
         </nav>
       </header>
 
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            // The scroll container. Centring and overflow cannot both live on
-            // one element: a centred flex child that outgrows its parent is
-            // pushed off the top and cannot be scrolled back to. So this one
-            // only scrolls, and the list inside it does the centring.
-            className="fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-bg lg:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-          >
+      {/*
+        Always in the DOM, shown by CSS.
+
+        Mounting and unmounting it needed framer-motion to animate the exit, and
+        that library was one of two reasons the page's critical path carried an
+        extra 130 kB. Held open or closed by an attribute instead: closed it is
+        `visibility: hidden`, which takes the links out of the tab order as
+        surely as unmounting did, and the fade is a plain transition.
+      */}
+      <div
+        className="nav-overlay fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-bg lg:hidden"
+        data-open={menuOpen ? "true" : "false"}
+        aria-hidden={!menuOpen}
+      >
             {/* min-h-full with justify-center centres the list when there is
                 room and lets it grow and scroll when there is not — which is
                 the case on any landscape phone. The top padding clears the bar,
@@ -294,10 +295,8 @@ export function Navbar() {
                   </button>
                 ),
               )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </div>
     </>
   );
 }

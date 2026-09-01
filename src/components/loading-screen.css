@@ -1,0 +1,45 @@
+/* ===========================================================
+   The loading curtain, animated in CSS.
+
+   Replaces what framer-motion was doing here — a fade on the way out and a
+   slide-up on each word. Those two effects were the only reason the library sat
+   on this page's critical path, where its 130 kB delayed every first paint.
+   =========================================================== */
+
+.loader {
+  opacity: 1;
+  transition: opacity 450ms ease-in-out;
+}
+
+.loader[data-leaving='true'] {
+  opacity: 0;
+  /* Nothing behind it should be unreachable while it fades. */
+  pointer-events: none;
+}
+
+.loader[data-reduced='true'] {
+  transition-duration: 200ms;
+}
+
+/* Each word arrives from below. The element is keyed on the word in the
+   component, so React replaces it and this runs again for every one. */
+.loader-word {
+  animation: loader-word-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes loader-word-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-word {
+    animation: none;
+  }
+}

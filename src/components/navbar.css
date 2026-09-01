@@ -1,0 +1,36 @@
+
+/* ===========================================================
+   The mobile menu overlay.
+
+   Kept in the DOM and toggled by attribute rather than mounted and unmounted,
+   so its exit can be a plain transition. Animating an unmount is the one thing
+   CSS cannot do alone, and it was the only reason this component needed
+   framer-motion — a library whose weight was being paid on every first load,
+   above the fold, for a fade.
+   =========================================================== */
+
+.nav-overlay {
+  opacity: 0;
+  /* visibility, not display: it is what makes the fade possible while still
+     taking the links out of the tab order and away from screen readers when
+     the menu is shut. Delayed on the way out so it holds until the fade ends. */
+  visibility: hidden;
+  transition:
+    opacity 300ms ease-out,
+    visibility 0s linear 300ms;
+}
+
+.nav-overlay[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 300ms ease-out,
+    visibility 0s linear 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-overlay {
+    transition-duration: 0s;
+    transition-delay: 0s;
+  }
+}

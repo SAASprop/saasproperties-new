@@ -3,27 +3,139 @@
   <head>
     <meta charset="UTF-8" />
     <!-- Root-relative, not "./": Vite rewrites a leading slash to the configured
-         base, so this resolves to /saasproperties-new/favicon.ico from any route.
-         A relative path is resolved against the current URL instead, which is a
-         different directory on /design than it is on /. -->
+         base, so this resolves to /saasproperties-new/favicon.ico wherever the
+         page is served from. A relative path is resolved against the current
+         URL, which is a different directory on a deep link than at the root. -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0a0a" />
     <meta
       name="description"
-      content="SAAS Properties — luxury developments and landmark residential architecture."
+      content="Reem Eleven — a luxury residential tower on Reem Island, Abu Dhabi, by SAAS Properties. Furnished studios through three-bedroom homes."
     />
-    <title>SAAS Properties — Luxury Development</title>
+    <title>Reem Eleven — SAAS Properties</title>
 
+    <!--
+      The page's own ground and first frame, inline.
+
+      This is a client-rendered app: without something in the document, nothing
+      can paint until React, Motion and GSAP have downloaded, parsed and run —
+      which on a throttled phone was four seconds of blank screen. These rules
+      and the #boot markup below give the browser a complete first frame out of
+      the HTML alone, so First Contentful Paint no longer waits on any script.
+
+      Deliberately tiny, and duplicated rather than shared: a stylesheet link
+      here would reintroduce exactly the round trip it exists to avoid.
+    -->
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html,
+      body {
+        margin: 0;
+        background: #0a0a0a;
+        overflow-x: hidden;
+      }
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0a0a0a;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      #boot span {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        font-size: 10px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: #878787;
+      }
+      #boot i {
+        width: 2rem;
+        height: 2rem;
+        border: 1px solid #2a2a2a;
+        border-top-color: #d0ba95;
+        border-radius: 50%;
+        animation: boot-spin 0.9s linear infinite;
+      }
+      @keyframes boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot i {
+          animation: none;
+        }
+      }
+      @media (min-width: 640px) {
+        #boot span {
+          top: 2.5rem;
+          left: 2.5rem;
+        }
+      }
+    </style>
+
+    <!--
+      The hero still, fetched during HTML parse.
+
+      It is the first and largest thing painted, but it is rendered by React, so
+      without this the browser only learns the URL after the bundle has run and
+      the fetch starts from cold at the worst moment. Preloading overlaps it with
+      the script download instead. `fetchpriority=high` puts it ahead of the
+      other images the page will ask for a moment later.
+    -->
+    <link
+      rel="preload"
+      as="image"
+      href="/reem-eleven-poster.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
+
+    <!--
+      Fonts, fetched without blocking the render.
+
+      A plain stylesheet link here is render-blocking against a third-party
+      origin, so the whole page waits on Google before it can paint. Loading it
+      as `print` and flipping the media on arrival gives the browser a
+      non-blocking fetch, and `display=swap` in the URL means text is readable
+      in the fallback face until the webfont lands. The <noscript> copy keeps it
+      working with scripting off.
+    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&display=swap"
       rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&display=swap"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@300;400;500&display=swap"
+      />
+    </noscript>
   </head>
   <body>
-    <div id="root"></div>
+    <!--
+      Inside #root on purpose: createRoot() clears the container when it mounts,
+      so the handoff from this frame to the real loading screen needs no cleanup
+      and cannot leave an orphan behind. Both are the same flat ground, so the
+      swap is invisible.
+    -->
+    <div id="root">
+      <div id="boot">
+        <span>SAAS Properties</span>
+        <i></i>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

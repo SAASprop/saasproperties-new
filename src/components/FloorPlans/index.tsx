@@ -214,7 +214,13 @@ export function FloorPlans() {
                           src={plan.image}
                           alt={`${plan.label} floor plan, ${PROPERTY.name}`}
                           className="fp-sheet"
-                          loading={index <= initialIndex + 1 ? "eager" : "lazy"}
+                          // All lazy. Three of these were marked eager so the
+                          // opening card and its neighbour would be ready, but
+                          // the section sits several screens down: that fetched
+                          // ~690 kB of drawings during the first paint of a page
+                          // whose visitor may never reach them. The browser
+                          // starts them well before they scroll into view.
+                          loading="lazy"
                           decoding="async"
                         />
                         <span className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 bg-gradient-to-t from-bg/90 to-transparent pb-3 pt-9 text-[10px] uppercase tracking-[0.25em] text-text opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
