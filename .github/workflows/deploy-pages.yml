@@ -28,7 +28,12 @@ jobs:
 
       - run: npm ci
 
+      # A Pages *project* site is served from /<repo>/, so the build needs the
+      # base path. Every other host — a custom domain, a local run — uses "/",
+      # which is the default in vite.config.ts.
       - run: npm run build
+        env:
+          VITE_BASE: /saasproperties-new/
 
       # enablement lets the first run turn Pages on itself and set the source to
       # Actions, instead of failing until someone configures it by hand.

@@ -1,5 +1,6 @@
 import { Overview } from './Overview'
 import { PropertyStats } from './PropertyStats'
+import { Timeline } from './Timeline'
 import { Features } from './Features'
 import { Gallery } from './Gallery'
 import { FloorPlans } from './FloorPlans'
@@ -19,6 +20,7 @@ export default function BelowFold() {
     <>
       <Overview />
       <PropertyStats />
+      <Timeline />
       <Features />
       <Gallery />
       <FloorPlans />

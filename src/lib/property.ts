@@ -58,6 +58,7 @@ export interface Property {
   overview: Overview;
   features: Features;
   gallery: Gallery;
+  timeline: Timeline;
   location: Location;
   floorPlans: FloorPlans;
   contact: Contact;
@@ -210,6 +211,28 @@ export interface GallerySet {
   label: string;
   /** Order is the carousel order. Mixed video and stills is expected. */
   items: (Media & { title: string })[];
+}
+
+/** One step in the house's story. */
+export interface Milestone {
+  /** Shown as the marker on the rule. A year, or any short token. */
+  year: string;
+  title: string;
+  /** Two sentences at most — the photograph carries the weight here. */
+  body: string;
+  image: { src: string; alt: string };
+}
+
+export interface Timeline {
+  caption: string;
+  heading: string;
+  /** One line of standfirst under the heading. */
+  intro: string;
+  /**
+   * In order, earliest first. The rule and the counter are both derived from
+   * this, so adding a milestone needs no change to the component.
+   */
+  milestones: Milestone[];
 }
 
 export interface Gallery {
@@ -449,6 +472,68 @@ export const PROPERTY: Property = {
     // here the form composes a mail draft to BRAND.email instead, so a visitor
     // is never left with a button that silently does nothing.
     endpoint: null,
+  },
+
+  timeline: {
+    caption: "Legacy",
+    heading: "Fifteen years on one island",
+    intro:
+      "Reem Eleven is not a first attempt. It is what a decade and a half of building on Reem Island has taught us, gathered into a single tower.",
+    /*
+     * The years and the three named towers are the real portfolio — the same
+     * projects the footer lists as handed over — so the section reads as this
+     * developer's own record rather than as a generic "our journey" panel.
+     *
+     * TODO(copy): the dates and the founding account come from the brief rather
+     * than from the company. Confirm both before launch.
+     */
+    milestones: [
+      {
+        year: "2011",
+        title: "The Vision",
+        body: "A single conviction: that an island this close to the capital deserved architecture equal to its ambition. The first parcel was bought before there was a road to it.",
+        image: {
+          src: asset("gallery/exterior/reem-eleven-3.webp"),
+          alt: "A tower facade at dusk, lit balconies stepping up against the Abu Dhabi skyline.",
+        },
+      },
+      {
+        year: "2015",
+        title: "Curated Ground",
+        body: "Acquisition became selection. From then on we took only the sites that could be made exceptional, and turned down considerably more than we bought.",
+        image: {
+          src: asset("gallery/exterior/reem-eleven-1.webp"),
+          alt: "An infinity pool on a podium deck, a mature olive at its centre and open sea beyond.",
+        },
+      },
+      {
+        year: "2019",
+        title: "Craft Without Borders",
+        body: "Ateliers in Milan, Copenhagen and Kyoto joined the drawings. The detailing changed first, then the expectations of everyone building beside us.",
+        image: {
+          src: asset("gallery/interior/reem-eleven-int-1.webp"),
+          alt: "An open living and dining room with herringbone floors and full-height glazing to the water.",
+        },
+      },
+      {
+        year: "2023",
+        title: "Three Landmarks",
+        body: "One Reem, Reem Five and Reem Nine handed over in sequence. Together they hold more than nine hundred residences, and no two of them look alike.",
+        image: {
+          src: asset("gallery/exterior/reem-eleven-2.webp"),
+          alt: "A pool terrace with loungers along one edge and the city skyline behind.",
+        },
+      },
+      {
+        year: "2026",
+        title: "Reem Eleven",
+        body: "The eleventh address, and the fullest expression of the ten before it. Delivered furnished, down to the last fitting.",
+        image: {
+          src: asset("gallery/exterior/reem-eleven-4.webp"),
+          alt: "A shaded terrace bar beside the pool, loungers along the water and the sea beyond.",
+        },
+      },
+    ],
   },
 
   gallery: {

@@ -2,10 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Root-relative, not "./": Vite rewrites a leading slash to the configured
-         base, so this resolves to /saasproperties-new/favicon.ico wherever the
-         page is served from. A relative path is resolved against the current
-         URL, which is a different directory on a deep link than at the root. -->
+    <!-- Root-relative, not "./": Vite rewrites a leading slash to whatever base
+         the build is configured with, so this resolves correctly whether the
+         site is served from "/" or from a subdirectory. A relative path would be
+         resolved against the current URL, which is a different directory on a
+         deep link than at the root. -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0a0a0a" />

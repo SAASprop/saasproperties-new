@@ -42,11 +42,28 @@ function spaFallback(): Plugin {
   }
 }
 
-// GitHub Pages serves the site from https://<user>.github.io/<repo>/, so every
-// emitted asset URL must be prefixed with the repo name. Keep this in step with
-// the repository name or the deployed page loads blank.
+/**
+ * Where the site is served from.
+ *
+ * The site is a root-level site: it runs at `/` in development and at `/` on any
+ * real domain, which is what every asset URL is now built against.
+ *
+ * The one deployment that cannot use `/` is a GitHub Pages *project* site, which
+ * is served from `https://<user>.github.io/<repo>/` — there, every emitted URL
+ * has to carry the repo name or the page loads blank. That is a property of the
+ * host, not of the code, so it comes in as an environment variable and the
+ * workflow sets it. Nothing else in the codebase names a base path: components
+ * read `import.meta.env.BASE_URL` (see `asset()` in lib/property) and Vite
+ * rewrites the root-relative URLs in index.html, so both cases follow from this
+ * one value.
+ *
+ *   VITE_BASE=/saasproperties-new/ npm run build   # GitHub Pages project site
+ *   npm run build                                  # any root-level host
+ */
+const base = process.env.VITE_BASE || '/'
+
 export default defineConfig({
-  base: '/saasproperties-new/',
+  base,
   plugins: [react(), spaFallback()],
 
   build: {

@@ -11,7 +11,9 @@
       "Bash(cd \"c:/Users/IsmailHussein/OneDrive - SAAS Properties LLC/Desktop/Projects/saas-properties-new\" && rm -f public/gallery/exterior/*.jpg public/gallery/exterior/*.png public/gallery/interior/*.jpg public/reem-eleven-poster.jpg public/reem-eleven-overview.jpg public/reem-features-bg.jpg public/reem-contact-bg.jpg public/reem-eleven-logo.png public/floorplans/*.jpg && echo \"--- public now ---\" && find public -type f | sort && echo \"--- total ---\" && du -sh public)",
       "Bash(timeout 180 npm install --no-save @ffmpeg/ffmpeg@0.12.15 @ffmpeg/core@0.12.10 @ffmpeg/util@0.12.2)",
       "Bash(cp \"C:/Users/ISMAIL~1/AppData/Local/Temp/claude/c--Users-IsmailHussein-OneDrive---SAAS-Properties-LLC-Desktop-Projects-saas-properties-new/a6361143-a411-4750-b45b-4b947e1a8eb3/scratchpad/encode.mjs\" ./encode-tmp.mjs)",
-      "Bash(timeout 900 node encode-tmp.mjs)"
+      "Bash(timeout 900 node encode-tmp.mjs)",
+      "Bash(VITE_BASE=/saasproperties-new/ npm run build)",
+      "Bash(MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' VITE_BASE='/saasproperties-new/' npx vite build)"
     ],
     "additionalDirectories": [
       "C:\\Users\\IsmailHussein\\OneDrive - SAAS Properties LLC\\Desktop\\Projects\\saas-properties-new\\public\\gallery\\exterior"

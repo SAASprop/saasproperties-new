@@ -76,28 +76,58 @@ export function Navbar() {
     });
   };
 
-  // Highlight whichever section currently owns the middle of the viewport.
-  // Contact is observed alongside the listed links so it highlights the same
-  // way, even though it is not part of NAV_LINKS.
-  //
+  /**
+   * Highlight whichever section the reader is currently in.
+   *
+   * Contact is included alongside the listed links so it lights the same way,
+   * even though it is not part of NAV_LINKS.
+   *
+   * This resolves the sections on every pass rather than holding references to
+   * them, which is what makes it correct on this page: everything below the hero
+   * is a lazily-imported chunk mounted on idle, so when the navbar first runs,
+   * none of these elements exist yet. The previous version looked them up once,
+   * found nothing, and returned — leaving the highlight stuck on Overview for
+   * the whole page. Re-querying costs six lookups per animation frame at most
+   * and cannot go stale.
+   *
+   * The active section is the last one whose top edge has passed a reading line
+   * 45% down the viewport. That rule needs no thresholds and behaves correctly
+   * at both ends: above the first section nothing has passed, so the first stays
+   * lit, and at the foot of the page the last section is the only candidate.
+   */
   useEffect(() => {
-    const sections = [...NAV_LINKS.map(({ id }) => id), ENQUIRE.targetId]
-      .map((id) => document.getElementById(id))
-      .filter((element): element is HTMLElement => element !== null);
-    if (sections.length === 0) return;
+    const ids = [...NAV_LINKS.map(({ id }) => id), ENQUIRE.targetId];
+    let frame = 0;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActiveId(visible.target.id);
-      },
-      { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
+    const measure = () => {
+      frame = 0;
+      const line = window.innerHeight * 0.45;
+      let current = ids[0];
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= line) current = id;
+      }
+
+      setActiveId(current);
+    };
+
+    // Coalesced into a frame: scroll fires far more often than the highlight can
+    // change, and the handler reads layout.
+    const onScroll = () => {
+      if (frame === 0) frame = window.requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    return () => {
+      if (frame !== 0) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   useEffect(() => {
